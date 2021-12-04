@@ -4,26 +4,38 @@ using UnityEngine;
 
 public class PolesSpectrum : SimpleSpectrum
 {
-
-    public Vector3 moveUnitsPerSecond = new Vector3(1, 0, 0);
     public Vector3 trackStartPoint;
     public Vector3 trackEndpoint;
+
+    private List<Transform> _bars;
+
     public override void OnUpdate()
     {
         base.OnUpdate();
 
-        transform.position += moveUnitsPerSecond * Time.deltaTime;
-        //var mod = Mathf.Clamp(transform.position.x % moveUnitsPerSecond.x, 0.1f, 1f);
-        var mod = Mathf.Repeat(transform.position.x, 3);
-        Debug.Log(mod + " " + (mod == 0f));
-        //List<Transform> _bars = new(bars);
-        //for (int i = 0; i < barAmount; i++)
-        //{
-        //    if(_bars[i].position.x > trackEndpoint.x)
-        //    {
-        //        DestroyImmediate(_bars[i]);
-        //        _bars.Insert(0, )
-        //    }
-        //}
+        if (_bars == null || _bars.Count != barAmount)
+            _bars = new List<Transform>(bars);
+
+        for (int i = 0; i < _bars.Count; i++)
+        {
+            if (_bars[i].position.x < trackEndpoint.x)
+            {
+                var trm = _bars[i];
+                var lastIndex = _bars.Count - 1;
+                trm.position = _bars[lastIndex].position + new Vector3(barXSpacing + trm.localScale.x, 0, 0);
+                _bars.RemoveAt(i);
+                _bars.Insert(lastIndex, trm);
+            }
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (_bars == null) return;
+        Gizmos.color = Color.red;
+        for (int i = 0; i < _bars.Count; i++)
+        {
+            Gizmos.DrawSphere(_bars[i].position, 0.5f);
+        }
     }
 }

@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
-public class SimpleSpectrum : MonoBehaviour {
+public class SimpleSpectrum : MonoBehaviour, IAudioSourceConsumer {
 
     public enum SourceType
     {
@@ -300,6 +300,7 @@ public class SimpleSpectrum : MonoBehaviour {
         for (int i = 0; i < barAmount; i++)
         {
             GameObject barClone = Instantiate(barPrefab, transform, false) as GameObject; //create the bars and assign the parent
+            barClone.name += i;
             //barClone.name = i.ToString();
             barClone.transform.localScale = new Vector3(barXScale, barMinYScale, 1);
 
@@ -409,12 +410,8 @@ public class SimpleSpectrum : MonoBehaviour {
 
     public virtual void OnUpdate()
     {
-
-    }
-
-    void Update () {
-		if (isEnabled) {
-            OnUpdate();
+        if (isEnabled)
+        {
             //sampleChannel = Mathf.Clamp(sampleChannel, 0, 1); //force the channel to be valid
 
             if (sourceType != SourceType.Custom)
@@ -436,22 +433,22 @@ public class SimpleSpectrum : MonoBehaviour {
 
 #if UNITY_EDITOR    //allows for editing curve while in play mode, disabled in build for optimisation
 
-                float spectrumLength = bars.Length * (1 + barXSpacing);
-                float midPoint = spectrumLength / 2;
+            float spectrumLength = bars.Length * (1 + barXSpacing);
+            float midPoint = spectrumLength / 2;
 
-                float curveAngleRads = 0, curveRadius = 0, halfwayAngleR = 0, halfwayAngleD = 0;
-                Vector3 curveCentreVector = Vector3.zero;
-                if (barCurveAngle > 0)
-                {
-                    curveAngleRads = (barCurveAngle / 360) * (2 * Mathf.PI);
-                    curveRadius = spectrumLength / curveAngleRads;
+            float curveAngleRads = 0, curveRadius = 0, halfwayAngleR = 0, halfwayAngleD = 0;
+            Vector3 curveCentreVector = Vector3.zero;
+            if (barCurveAngle > 0)
+            {
+                curveAngleRads = (barCurveAngle / 360) * (2 * Mathf.PI);
+                curveRadius = spectrumLength / curveAngleRads;
 
-                    halfwayAngleR = curveAngleRads / 2;
-                    halfwayAngleD = barCurveAngle / 2;
-                    curveCentreVector = new Vector3(0, 0, -curveRadius);
-                    if (barCurveAngle == 360)
-                        curveCentreVector = new Vector3(0, 0, 0);
-                }
+                halfwayAngleR = curveAngleRads / 2;
+                halfwayAngleD = barCurveAngle / 2;
+                curveCentreVector = new Vector3(0, 0, -curveRadius);
+                if (barCurveAngle == 360)
+                    curveCentreVector = new Vector3(0, 0, 0);
+            }
 #endif
 #if WEB_MODE
             float freqLim = frequencyLimitHigh * 0.76f; //AnalyserNode.getFloatFrequencyData doesn't fill the array, for some reason
@@ -459,20 +456,22 @@ public class SimpleSpectrum : MonoBehaviour {
             float freqLim = frequencyLimitHigh;
 #endif
 
-            for (int i = 0; i < bars.Length; i++) {
-				Transform bar = bars [i];
+            for (int i = 0; i < bars.Length; i++)
+            {
+                Transform bar = bars[i];
 
-				float value;
+                float value;
                 float trueSampleIndex;
 
                 //GET SAMPLES
-				if (useLogarithmicFrequency) {
-					//LOGARITHMIC FREQUENCY SAMPLING
+                if (useLogarithmicFrequency)
+                {
+                    //LOGARITHMIC FREQUENCY SAMPLING
 
                     //trueSampleIndex = highFrequencyTrim * (highestLogFreq - Mathf.Log(barAmount + 1 - i, 2)) * logFreqMultiplier; //old version
 
                     trueSampleIndex = Mathf.Lerp(frequencyLimitLow, freqLim, (highestLogFreq - Mathf.Log(barAmount + 1 - i, 2)) / highestLogFreq) * frequencyScaleFactor;
-                    
+
                     //'logarithmic frequencies' just means we want to bias to the lower frequencies.
                     //by doing log2(max(i)) - log2(max(i) - i), we get a flipped log graph
                     //(make a graph of log2(64)-log2(64-x) to see what I mean)
@@ -481,8 +480,10 @@ public class SimpleSpectrum : MonoBehaviour {
                     //we then use this to Lerp between frequency limits, and then an index is calculated.
                     //also 1 gets added to barAmount pretty much everywhere, because without it, the log hits (barAmount-1,max(freq))
 
-                } else {
-					//LINEAR (SCALED) FREQUENCY SAMPLING 
+                }
+                else
+                {
+                    //LINEAR (SCALED) FREQUENCY SAMPLING 
                     //trueSampleIndex = i * linearSampleStretch; //don't like this anymore
 
                     trueSampleIndex = Mathf.Lerp(frequencyLimitLow, freqLim, ((float)i) / barAmount) * frequencyScaleFactor;
@@ -505,7 +506,7 @@ public class SimpleSpectrum : MonoBehaviour {
                     value = value * (Mathf.Log(trueSampleIndex + 1) + 1);  //different due to how the WebAudioAPI outputs spectrum data.
 
 #else
-                    value = value * (trueSampleIndex+1);
+                    value = value * (trueSampleIndex + 1);
 #endif
                 }
 
@@ -519,11 +520,13 @@ public class SimpleSpectrum : MonoBehaviour {
                 if (value * barYScale > oldYScale)
                 {
                     newYScale = Mathf.Lerp(oldYScale, Mathf.Max(value * barYScale, barMinYScale), attackDamp);
-				} else {
+                }
+                else
+                {
                     newYScale = Mathf.Lerp(oldYScale, Mathf.Max(value * barYScale, barMinYScale), decayDamp);
-				}
+                }
 
-                bar.localScale = new Vector3(barXScale,newYScale,1);
+                bar.localScale = new Vector3(barXScale, newYScale, 1);
 
                 oldYScales[i] = newYScale;
 
@@ -561,22 +564,29 @@ public class SimpleSpectrum : MonoBehaviour {
                     float thisBarAngleR = (position * curveAngleRads) - halfwayAngleR;
                     float thisBarAngleD = (position * barCurveAngle) - halfwayAngleD;
                     bar.localRotation = Quaternion.Euler(barXRotation, thisBarAngleD, 0);
-                    bar.localPosition = new Vector3(Mathf.Sin(thisBarAngleR) * curveRadius, 0, Mathf.Cos(thisBarAngleR) * curveRadius) + curveCentreVector;
+                    //bar.localPosition = new Vector3(Mathf.Sin(thisBarAngleR) * curveRadius, 0, Mathf.Cos(thisBarAngleR) * curveRadius) + curveCentreVector;
                 }
                 else
                 {
-                    bar.localPosition = new Vector3(i * (1 + barXSpacing) - midPoint, 0, 0);
+                    //bar.localPosition = new Vector3(i * (1 + barXSpacing) - midPoint, 0, 0);
                 }
 #endif
-			}
+            }
 
-		}else{ //switched off
-			foreach (Transform bar in bars) {
+        }
+        else
+        { //switched off
+            foreach (Transform bar in bars)
+            {
                 bar.localScale = Vector3.Lerp(bar.localScale, new Vector3(1, barMinYScale, 1), decayDamp);
-			}
-		}
-        if ((Time.unscaledTime - lastMicRestartTime)>micRestartWait)
+            }
+        }
+        if ((Time.unscaledTime - lastMicRestartTime) > micRestartWait)
             RestartMicrophone();
+    }
+
+    void Update () {
+        OnUpdate();
 	}
 
     /// <summary>
@@ -679,4 +689,10 @@ public class SimpleSpectrum : MonoBehaviour {
         }
         return spectrum;
     }
+
+    public void SetAudioSource(AudioSource audioSource)
+    {
+        this.audioSource = audioSource;
+    }
+
 }

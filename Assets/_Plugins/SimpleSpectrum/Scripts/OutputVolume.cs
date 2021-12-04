@@ -10,7 +10,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
-public class OutputVolume : MonoBehaviour
+public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
 {
     public enum SourceType
     {
@@ -305,5 +305,10 @@ public class OutputVolume : MonoBehaviour
         }
         return Mathf.Sqrt(rms / (outputSamples.Length)); //mean and root
 #endif
+    }
+
+    public void SetAudioSource(AudioSource audioSource)
+    {
+        this.audioSource = audioSource;
     }
 }
