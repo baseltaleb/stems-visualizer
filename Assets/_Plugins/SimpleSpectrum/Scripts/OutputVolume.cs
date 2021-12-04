@@ -159,7 +159,7 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
 
     float newValue;
     float oldScale;
-    float oldColorVal = 0;
+    protected float oldColorVal = 0;
     Material mat;
 
     int mat_ValId;
@@ -201,12 +201,11 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
         sampleAmount = SSWebInteract.SetFFTSize(sampleAmount);
 #endif
     }
-
-    void Update () {
-
-        if(isEnabled && sourceType != SourceType.Custom)
+    public virtual void OnUpdate()
+    {
+        if (isEnabled && sourceType != SourceType.Custom)
         {
-            if(sourceType==SourceType.AudioListener)
+            if (sourceType == SourceType.AudioListener)
                 newValue = GetRMS(sampleAmount, channel);
             else
                 newValue = GetRMS(audioSource, sampleAmount, channel);
@@ -219,7 +218,7 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
         switch (outputType)
         {
             case OutputType.PrefabBar:
-                if(scalePrefab)
+                if (scalePrefab)
                     barT.localScale = new Vector3(1, newScale, 1);
 
                 if (useColorGradient && materialColourCanBeUsed)
@@ -254,9 +253,13 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
 
             case OutputType.ObjectScale:
                 float s = Mathf.Lerp(outputScaleMin, outputScaleMax, newScale);
-                transform.localScale = new Vector3(s,s,s);
+                transform.localScale = new Vector3(s, s, s);
                 break;
         }
+    }
+
+    void Update () {
+        OnUpdate();
 	}
 
     /// <summary>
