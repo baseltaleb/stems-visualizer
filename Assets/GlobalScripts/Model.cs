@@ -38,3 +38,16 @@ public class AnalysisResult
     public float tempo;
     public Dictionary<string, string> stem_links;
 }
+
+public static class SegmentLabels {
+    public static string INTRO = "intro";
+    public static string OUTRO = "outro";
+    public static string BREAK = "break";
+    public static string BRIDGE = "bridge";
+    public static string INST = "inst";
+    public static string SOLO = "solos";
+    public static string VERSE = "verse";
+    public static string CHORUS = "chorus";
+    public static string START = "start";
+    public static string END = "end";
+}
