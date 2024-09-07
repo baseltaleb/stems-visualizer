@@ -10,20 +10,21 @@ using UnityEngine.Audio;
 
 [CustomEditor(typeof(SimpleSpectrum))]
 [CanEditMultipleObjects]
-public class SimpleSpectrumEditor : Editor {
+public class SimpleSpectrumEditor : Editor
+{
 
     [SerializeField]
     AudioMixerGroup muteGroup;
-    
-	SerializedProperty  propertyWindow;
+
+    SerializedProperty propertyWindow;
 
     SerializedProperty propertyEnabled;
 
     SerializedProperty propertySourceType;
     SerializedProperty propertyAudioSource;
 
-	SerializedProperty propertyAttackDamp;
-	SerializedProperty propertyDecayDamp;
+    SerializedProperty propertyAttackDamp;
+    SerializedProperty propertyDecayDamp;
 
     SerializedProperty propertyNumSamples;
     SerializedProperty propertySampleChannel;
@@ -42,17 +43,17 @@ public class SimpleSpectrumEditor : Editor {
     SerializedProperty propertyBarCurveAngle;
     SerializedProperty propertyBarXRotation;
 
-	SerializedProperty propertyUseColorGradient;
-	SerializedProperty propertyColorMin;
-	SerializedProperty propertyColorMax;
+    SerializedProperty propertyUseColorGradient;
+    SerializedProperty propertyColorMin;
+    SerializedProperty propertyColorMax;
     SerializedProperty propertyColorCurve;
     SerializedProperty propertyColorAttackDamp;
     SerializedProperty propertyColorDecayDamp;
 
-	bool foldoutSpectrumOpen = true;
+    bool foldoutSpectrumOpen = true;
     bool foldoutSamplingOpen = true;
-	bool foldoutBarsOpen = true;
-	bool foldoutColorsOpen = true;
+    bool foldoutBarsOpen = true;
+    bool foldoutColorsOpen = true;
 
 
     /*void NotifyPropertyChanged()
@@ -64,9 +65,10 @@ public class SimpleSpectrumEditor : Editor {
         }
 	}*/
 
-	void OnEnable(){
+    void OnEnable()
+    {
 
-        if(((SimpleSpectrum)target).muteGroup == null)
+        if (((SimpleSpectrum)target).muteGroup == null)
         {
             ((SimpleSpectrum)target).muteGroup = muteGroup;
         }
@@ -74,9 +76,9 @@ public class SimpleSpectrumEditor : Editor {
         propertyEnabled = serializedObject.FindProperty("isEnabled");
 
         propertySourceType = serializedObject.FindProperty("sourceType");
-        propertyAudioSource = serializedObject.FindProperty ("audioSource");
-		propertyAttackDamp = serializedObject.FindProperty ("attackDamp");
-		propertyDecayDamp = serializedObject.FindProperty ("decayDamp");
+        propertyAudioSource = serializedObject.FindProperty("audioSource");
+        propertyAttackDamp = serializedObject.FindProperty("attackDamp");
+        propertyDecayDamp = serializedObject.FindProperty("decayDamp");
 
         propertyNumSamples = serializedObject.FindProperty("numSamples");
         propertySampleChannel = serializedObject.FindProperty("sampleChannel");
@@ -103,13 +105,14 @@ public class SimpleSpectrumEditor : Editor {
         propertyColorCurve = serializedObject.FindProperty("colorValueCurve");
         propertyColorAttackDamp = serializedObject.FindProperty("colorAttackDamp");
         propertyColorDecayDamp = serializedObject.FindProperty("colorDecayDamp");
-	}
+    }
 
 
-	public override void OnInspectorGUI(){
-		serializedObject.Update();
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
 
-		EditorGUILayout.LabelField ("A simple audio spectum generator by Sam Boyer.", new GUIStyle{fontSize = 10});
+        EditorGUILayout.LabelField("A simple audio spectum generator by Sam Boyer.", new GUIStyle { fontSize = 10 });
 
 #if UNITY_WEBGL
         EditorGUILayout.LabelField("NOTE: SimpleSpectrum works with WebGL, but only under certain conditions. Check the docs!", new GUIStyle {wordWrap = true });
@@ -117,28 +120,30 @@ public class SimpleSpectrumEditor : Editor {
 
         EditorGUILayout.PropertyField(propertyEnabled);
 
-		foldoutSpectrumOpen = EditorGUILayout.Foldout (foldoutSpectrumOpen,"Spectrum Settings");
-		if(foldoutSpectrumOpen){
+        foldoutSpectrumOpen = EditorGUILayout.Foldout(foldoutSpectrumOpen, "Spectrum Settings");
+        if (foldoutSpectrumOpen)
+        {
 
 #if UNITY_WEBGL
             EditorGUILayout.LabelField("Only AudioListener can be used with WebGL.", new GUIStyle { wordWrap = true });
 #endif
             EditorGUILayout.PropertyField(propertySourceType);
 
-            if (propertySourceType.enumValueIndex == 0){
-				EditorGUILayout.PropertyField (propertyAudioSource);
-			}
-
-            if(propertySourceType.enumValueIndex == 4)
+            if (propertySourceType.enumValueIndex == 0)
             {
-                EditorGUILayout.LabelField("Use the spectrumInputData property to set your own data. It's probably worth disabling 'Use Logarithmic Frequency'.", new GUIStyle {fontSize = 10, wordWrap = true });
+                EditorGUILayout.PropertyField(propertyAudioSource);
             }
 
-            EditorGUILayout.PropertyField (propertyAttackDamp);
-			EditorGUILayout.PropertyField (propertyDecayDamp);
+            if (propertySourceType.enumValueIndex == 4)
+            {
+                EditorGUILayout.LabelField("Use the spectrumInputData property to set your own data. It's probably worth disabling 'Use Logarithmic Frequency'.", new GUIStyle { fontSize = 10, wordWrap = true });
+            }
+
+            EditorGUILayout.PropertyField(propertyAttackDamp);
+            EditorGUILayout.PropertyField(propertyDecayDamp);
 
 
-            foldoutSamplingOpen = EditorGUILayout.Foldout (foldoutSamplingOpen,"Sampling Settings");
+            foldoutSamplingOpen = EditorGUILayout.Foldout(foldoutSamplingOpen, "Sampling Settings");
             if (foldoutSamplingOpen)
             {
 #if UNITY_WEBGL
@@ -153,48 +158,52 @@ public class SimpleSpectrumEditor : Editor {
                 EditorGUILayout.PropertyField(propertyFrequencyLimitHigh);
 
 
-                EditorGUILayout.PropertyField(propertyMultiplyByFreq); 
+                EditorGUILayout.PropertyField(propertyMultiplyByFreq);
 
                 EditorGUILayout.PropertyField(propertyWindow);
             }
-		}
+        }
 
-		foldoutBarsOpen = EditorGUILayout.Foldout (foldoutBarsOpen,"Bar Settings");
-		if (foldoutBarsOpen) {
-            EditorGUILayout.PropertyField (propertyBarAmount);
-			EditorGUILayout.PropertyField (propertyBarPrefab);
-            EditorGUILayout.PropertyField (propertyBarYScale);
+        foldoutBarsOpen = EditorGUILayout.Foldout(foldoutBarsOpen, "Bar Settings");
+        if (foldoutBarsOpen)
+        {
+            EditorGUILayout.PropertyField(propertyBarAmount);
+            EditorGUILayout.PropertyField(propertyBarPrefab);
+            EditorGUILayout.PropertyField(propertyBarYScale);
             EditorGUILayout.PropertyField(propertyBarMinYScale);
             EditorGUILayout.PropertyField(propertyBarXScale);
             EditorGUILayout.PropertyField(propertyBarXSpacing);
             EditorGUILayout.PropertyField(propertyBarXRotation);
             EditorGUILayout.PropertyField(propertyBarCurveAngle, new GUIContent("Spectrum Bend Angle"));
-		}
+        }
 
-		foldoutColorsOpen = EditorGUILayout.Foldout (foldoutColorsOpen,"Color Settings");
-		if (foldoutColorsOpen) {
+        foldoutColorsOpen = EditorGUILayout.Foldout(foldoutColorsOpen, "Color Settings");
+        if (foldoutColorsOpen)
+        {
 #if UNITY_WEBGL
             EditorGUILayout.LabelField("Careful when using Color Gradients in WebGL, it can damage performance.", new GUIStyle { wordWrap = true });
 #endif
-            EditorGUILayout.PropertyField (propertyUseColorGradient);
-            
+            EditorGUILayout.PropertyField(propertyUseColorGradient);
+
             EditorGUILayout.PropertyField(propertyColorMin, new GUIContent(propertyUseColorGradient.boolValue ? "Minimum Color" : "Color"));
 
-            if (propertyUseColorGradient.boolValue){
+            if (propertyUseColorGradient.boolValue)
+            {
 
                 EditorGUILayout.PropertyField(propertyColorMax, new GUIContent("Maximum Color"));
                 EditorGUILayout.PropertyField(propertyColorCurve);
                 EditorGUILayout.PropertyField(propertyColorAttackDamp);
                 EditorGUILayout.PropertyField(propertyColorDecayDamp);
-			}
-		}
+            }
+        }
 
-		if(GUILayout.Button("Rebuild Spectrum")){
+        if (GUILayout.Button("Rebuild Spectrum"))
+        {
             Rebuild();
-		}
+        }
 
-		serializedObject.ApplyModifiedProperties ();
-	}
+        serializedObject.ApplyModifiedProperties();
+    }
 
     private void Rebuild()
     {
