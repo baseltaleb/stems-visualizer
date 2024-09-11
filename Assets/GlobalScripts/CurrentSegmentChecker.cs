@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using UnityEngine;
@@ -27,29 +28,40 @@ public class CurrentSegmentChecker : MonoBehaviour
         {
             Debug.Log("Segment changed from " + lastSegment?.label + " to " + segementAtSeconds?.label);
             lastSegment = segementAtSeconds;
-            SongEvents.TriggerSegementEnter(segementAtSeconds.label);
+            // Replace inst with solo if solo is not present
+            if (segementAtSeconds.label == SegmentLabels.INST && !currentResult.segments.Any(s => s.label == "solo"))
+            {
+                SongEvents.TriggerSegementEnter(SegmentLabels.SOLO);
+            }
+            else
+            {
+                SongEvents.TriggerSegementEnter(segementAtSeconds.label);
+            }
         }
     }
 
-    private void Update()
+    void Update()
     {
         timer += Time.deltaTime;
         if (timer >= timerCheckInterval)
         {
-            CheckSegementChanged(audioSource.time + timerCheckInterval);
+            CheckSegementChanged(audioSource.time + 1f);
             timer = 0f;
         }
     }
 
-    private void OnCurrentSongChanged(AnalysisResult result) {
+    private void OnCurrentSongChanged(AnalysisResult result)
+    {
         currentResult = result;
     }
 
-    void OnEnable() {
+    void OnEnable()
+    {
         SongEvents.OnCurrentSongChanged += OnCurrentSongChanged;
     }
 
-    void OnDisable() {
+    void OnDisable()
+    {
         SongEvents.OnCurrentSongChanged -= OnCurrentSongChanged;
     }
 }

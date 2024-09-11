@@ -21,30 +21,76 @@ public class AudioController : MonoBehaviour
         analysis = FindObjectOfType<AudioAnalysis>();
     }
 
-    public void Play() {
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            PlaybackSkip(-10);
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            PlaybackSkip(10);
+        }
+    }
+
+    public void Play()
+    {
         vocals.Play();
         drums.Play();
         bass.Play();
         other.Play();
     }
 
-    public void Stop() {
+    public void Stop()
+    {
         vocals.Stop();
         drums.Stop();
         bass.Stop();
         other.Stop();
     }
 
-    public void Mute(string clip) {
-        if (clip == "vocals") {
+    public void Mute(string clip)
+    {
+        if (clip == "vocals")
+        {
             vocals.mute = !vocals.mute;
-        } else if (clip == "drums") {
+        }
+        else if (clip == "drums")
+        {
             drums.mute = !drums.mute;
-        } else if (clip == "bass") {
+        }
+        else if (clip == "bass")
+        {
             bass.mute = !bass.mute;
-        } else if (clip == "other") {
+        }
+        else if (clip == "other")
+        {
             other.mute = !other.mute;
         }
+    }
+
+    public void PlaybackSkip(float seconds)
+    {
+        if (vocals.time + seconds < 0)
+        {
+            vocals.time = 0;
+            drums.time = 0;
+            bass.time = 0;
+            other.time = 0;
+            return;
+        }
+        if (vocals.time + seconds > vocals.clip.length)
+        {
+            vocals.time = vocals.clip.length;
+            drums.time = drums.clip.length;
+            bass.time = bass.clip.length;
+            other.time = other.clip.length;
+            return;
+        }
+        vocals.time += seconds;
+        drums.time += seconds;
+        bass.time += seconds;
+        other.time += seconds;
     }
 
     public void PickFile()
@@ -79,23 +125,27 @@ public class AudioController : MonoBehaviour
 
             // Debug.Log("Other length: " + result.spectrogram.other.Length);
             Debug.Log("Number of segments: " + result.segments.Count);
-            StartCoroutine(LoadAudio(result.stem_links["vocals.wav"], (audioClip) =>
+            StartCoroutine(analysis.LoadAudio(result.session_id, "vocals", (audioClip) =>
             {
                 vocals.clip = audioClip;
             }));
-            StartCoroutine(LoadAudio(result.stem_links["drums.wav"], (audioClip) =>
+            StartCoroutine(analysis.LoadAudio(result.session_id, "drums", (audioClip) =>
             {
                 drums.clip = audioClip;
             }));
-            StartCoroutine(LoadAudio(result.stem_links["bass.wav"], (audioClip) =>
+            StartCoroutine(analysis.LoadAudio(result.session_id, "bass", (audioClip) =>
             {
                 bass.clip = audioClip;
             }));
-            StartCoroutine(LoadAudio(result.stem_links["other.wav"], (audioClip) =>
+            StartCoroutine(analysis.LoadAudio(result.session_id, "other", (audioClip) =>
             {
                 other.clip = audioClip;
             }));
-
+            vocals.time = 0;
+            drums.time = 0;
+            bass.time = 0;
+            other.time = 0;
+            
             SongEvents.TriggerCurrentSongChange(result);
             // spectrogramData = ConvertToMultidimensionalArray(result.spectrogram.other);
             // timePerStep = 1 / result.spectrogram.fps;
@@ -103,21 +153,6 @@ public class AudioController : MonoBehaviour
         }));
     }
 
-    private IEnumerator LoadAudio(string url, System.Action<AudioClip> downloadComplete)
-    {
-        UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(analysis.serverUrl + "/" + url, AudioType.WAV);
-        yield return www.SendWebRequest();
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log(www.error);
-        }
-        else
-        {
-            // www.SendWebRequest();            
-            AudioClip audioClip = DownloadHandlerAudioClip.GetContent(www);
-            downloadComplete(audioClip);
-        }
-    }
     private float[,] ConvertToMultidimensionalArray(List<List<float>> nestedList)
     {
         if (nestedList == null || nestedList.Count == 0)

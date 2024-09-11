@@ -33,10 +33,10 @@ public class Spectrogram
 [System.Serializable]
 public class AnalysisResult
 {
+    public string session_id;
     public List<Segment> segments;
     // public Spectrogram spectrogram;
     public float tempo;
-    public Dictionary<string, string> stem_links;
 }
 
 public static class SegmentLabels {
@@ -45,7 +45,7 @@ public static class SegmentLabels {
     public static string BREAK = "break";
     public static string BRIDGE = "bridge";
     public static string INST = "inst";
-    public static string SOLO = "solos";
+    public static string SOLO = "solo";
     public static string VERSE = "verse";
     public static string CHORUS = "chorus";
     public static string START = "start";

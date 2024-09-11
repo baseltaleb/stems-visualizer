@@ -37,10 +37,27 @@ class AudioAnalysis : MonoBehaviour
             // Now you can use the 'result' object which contains all the analyzed data
             Debug.Log("Tempo: " + result.tempo);
             Debug.Log("Number of segments: " + result.segments.Count);
-            
+
             // Access other properties as needed
             yield return null;
             onAnalysisComplete(result);
+        }
+    }
+
+    public IEnumerator LoadAudio(string sessionId, string stemName, System.Action<AudioClip> downloadComplete)
+    {
+        string url = serverUrl + "/" + "file/" + sessionId + "/" + stemName + ".mp3";
+        UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG);
+        yield return www.SendWebRequest();
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            // www.SendWebRequest();            
+            AudioClip audioClip = DownloadHandlerAudioClip.GetContent(www);
+            downloadComplete(audioClip);
         }
     }
 }
