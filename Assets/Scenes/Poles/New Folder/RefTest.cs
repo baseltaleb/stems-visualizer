@@ -7,7 +7,7 @@ public class RefTest : MonoBehaviour
 {
     void Start()
     {
-        GetComponent<PlanarReflections>().enabled = true;
+        // GetComponent<PlanarReflections>().enabled = true;
     }
 
 
