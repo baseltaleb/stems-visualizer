@@ -42,6 +42,9 @@ public class CurrentSegmentChecker : MonoBehaviour
 
     void Update()
     {
+        if(audioSource.clip == null) {
+            return;
+        }
         timer += Time.deltaTime;
         if (timer >= timerCheckInterval)
         {

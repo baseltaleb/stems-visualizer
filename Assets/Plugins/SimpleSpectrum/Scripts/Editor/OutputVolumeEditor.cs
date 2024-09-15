@@ -34,7 +34,8 @@ public class OutputVolumeEditor : Editor
     SerializedProperty propertyColorCurve;
     SerializedProperty propertyColorAttackDamp;
     SerializedProperty propertyColorDecayDamp;
-
+    SerializedProperty propertyLightIntensity;
+    
     bool foldoutSamplingOpen = true;
     bool foldoutOutputOpen = true;
 
@@ -61,6 +62,7 @@ public class OutputVolumeEditor : Editor
         propertyColorCurve = serializedObject.FindProperty("colorCurve");
         propertyColorAttackDamp = serializedObject.FindProperty("colorAttackDamp");
         propertyColorDecayDamp = serializedObject.FindProperty("colorDecayDamp");
+        propertyLightIntensity = serializedObject.FindProperty("lightIntesities");
     }
 
     public override void OnInspectorGUI()
@@ -139,6 +141,9 @@ public class OutputVolumeEditor : Editor
                 case 3: //scale
                     EditorGUILayout.PropertyField(propertyOutputScaleMin);
                     EditorGUILayout.PropertyField(propertyOutputScaleMax);
+                    break;
+                case 4: //light intensity
+                    EditorGUILayout.PropertyField(propertyLightIntensity);
                     break;
             }
         }

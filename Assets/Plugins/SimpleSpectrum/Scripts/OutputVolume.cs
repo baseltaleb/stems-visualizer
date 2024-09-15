@@ -9,6 +9,8 @@ OutputVolume.cs - Part of Simple Spectrum V2.1 by Sam Boyer.
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Experimental.GlobalIllumination;
+using System;
 
 public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
 {
@@ -19,9 +21,15 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
 
     public enum OutputType
     {
-        PrefabBar, ObjectPosition, ObjectRotation, ObjectScale
+        PrefabBar, ObjectPosition, ObjectRotation, ObjectScale, LightIntensity
     }
 
+    [Serializable]
+    public struct LightIntensity {
+        public Light light;
+        public float minIntensity;
+        public float maxIntensity;
+    }
 
     #region SAMPLING PROPERTIES
     /// <summary>
@@ -73,7 +81,7 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
     /// A multiplier / mask to use when object position or rotation is used.
     /// </summary>
     [Tooltip("A multiplier / mask for positioning or rotating. The volume data is multiplied by this vector, so 0 will mask that dimension out.")]
-    public Vector3 valueMultiplier = new Vector3(0,0,-90);
+    public Vector3 valueMultiplier = new Vector3(0, 0, -90);
     /// <summary>
     /// The minimum scale when object scaling is used.
     /// </summary>
@@ -135,7 +143,8 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
     /// </summary>
     public float inputValue
     {
-        set {
+        set
+        {
             if (sourceType == SourceType.Custom)
                 newValue = value;
             else
@@ -151,6 +160,8 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
         get { return oldScale; }
     }
 
+    public LightIntensity[] lightIntesities;
+    
     //float[] samples;
 
     GameObject bar;
@@ -165,8 +176,9 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
     int mat_ValId;
     bool materialColourCanBeUsed = true;
 
-    void Start () {
-        if(outputType == OutputType.PrefabBar)
+    void Start()
+    {
+        if (outputType == OutputType.PrefabBar)
         {
             bar = Instantiate(prefab) as GameObject;
             barT = bar.transform;
@@ -255,12 +267,20 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
                 float s = Mathf.Lerp(outputScaleMin, outputScaleMax, newScale);
                 transform.localScale = new Vector3(s, s, s);
                 break;
+            case OutputType.LightIntensity:
+                foreach (var lightIntensity in lightIntesities)
+                {
+                    float i = Mathf.Lerp(lightIntensity.minIntensity, lightIntensity.maxIntensity, newScale);
+                    lightIntensity.light.intensity = i;
+                }
+                break;
         }
     }
 
-    void Update () {
+    void Update()
+    {
         OnUpdate();
-	}
+    }
 
     /// <summary>
     /// Returns the current output volume of the specified AudioSource, using the RMS method.
