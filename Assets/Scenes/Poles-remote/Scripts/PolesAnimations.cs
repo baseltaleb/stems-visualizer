@@ -11,7 +11,6 @@ public class PolesAnimations : MonoBehaviour
     }
 
     void OnSegmentEnter(string label) {
-        Debug.Log("Sending trigger: " + label);
         segmentAnimator.SetTrigger(label);
     }
 
@@ -21,14 +20,5 @@ public class PolesAnimations : MonoBehaviour
 
     void OnDisable() {
         SongEvents.OnSegmentEntered -= OnSegmentEnter;
-    }
-
-    void Update() {
-        if(Input.GetKeyDown(KeyCode.Alpha1)) {
-            segmentAnimator.SetTrigger("intro");
-        }
-                if(Input.GetKeyDown(KeyCode.Alpha2)) {
-            segmentAnimator.SetTrigger("solo");
-        }
     }
 }

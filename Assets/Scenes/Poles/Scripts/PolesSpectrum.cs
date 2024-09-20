@@ -9,6 +9,7 @@ public class PolesSpectrum : SimpleSpectrum
     public Bounds trackBounds;
     // public BoxCollider boxCollider;
     private List<Transform> _bars;
+    private readonly SpectrumColorHandler spectrumColorHandler = new();
 
     void Awake()
     {
@@ -25,65 +26,65 @@ public class PolesSpectrum : SimpleSpectrum
         }
     }
 
-    private void MoveBarsWithinBounds()
-    {
-        if (_bars == null || _bars.Count != barAmount)
-            _bars = new List<Transform>(bars);
-
-        for (int i = 0; i < _bars.Count; i++)
-        {
-            Vector3 position = _bars[i].position;
-            bool positionChanged = false;
-
-            // Check and adjust X axis
-            if (position.x < trackBounds.min.x)
-            {
-                position.x = trackBounds.max.x;
-                positionChanged = true;
-            }
-            else if (position.x > trackBounds.max.x)
-            {
-                position.x = trackBounds.min.x;
-                positionChanged = true;
-            }
-
-            // Check and adjust Y axis
-            if (position.y < trackBounds.min.y)
-            {
-                position.y = trackBounds.max.y;
-                positionChanged = true;
-            }
-            else if (position.y > trackBounds.max.y)
-            {
-                position.y = trackBounds.min.y;
-                positionChanged = true;
-            }
-
-            // Check and adjust Z axis
-            if (position.z < trackBounds.min.z)
-            {
-                position.z = trackBounds.max.z;
-                positionChanged = true;
-            }
-            else if (position.z > trackBounds.max.z)
-            {
-                position.z = trackBounds.min.z;
-                positionChanged = true;
-            }
-
-            if (positionChanged)
-            {
-                _bars[i].position = position;
-            }
-        }
-    }
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (boundsEnabled)
+        for (int i = 0; i < bars.Length; i++)
         {
-            MoveBarsWithinBounds();
+            if (boundsEnabled)
+            {
+                MoveBarWithinBounds(i);
+            }
+            spectrumColorHandler.UpdateColor(this, i);
         }
+    }
+
+    private void MoveBarWithinBounds(int index)
+    {
+        Vector3 position = bars[index].position;
+        bool positionChanged = false;
+
+        // Check and adjust X axis
+        if (position.x < trackBounds.min.x)
+        {
+            position.x = trackBounds.max.x;
+            positionChanged = true;
+        }
+        else if (position.x > trackBounds.max.x)
+        {
+            position.x = trackBounds.min.x;
+            positionChanged = true;
+        }
+
+        // Check and adjust Y axis
+        if (position.y < trackBounds.min.y)
+        {
+            position.y = trackBounds.max.y;
+            positionChanged = true;
+        }
+        else if (position.y > trackBounds.max.y)
+        {
+            position.y = trackBounds.min.y;
+            positionChanged = true;
+        }
+
+        // Check and adjust Z axis
+        if (position.z < trackBounds.min.z)
+        {
+            position.z = trackBounds.max.z;
+            positionChanged = true;
+        }
+        else if (position.z > trackBounds.max.z)
+        {
+            position.z = trackBounds.min.z;
+            positionChanged = true;
+        }
+
+        if (positionChanged)
+        {
+            bars[index].position = position;
+        }
+
     }
 
     private void OnDrawGizmosSelected()

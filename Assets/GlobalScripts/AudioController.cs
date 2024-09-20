@@ -18,7 +18,7 @@ public class AudioController : MonoBehaviour
 
     public void Awake()
     {
-        analysis = FindObjectOfType<AudioAnalysis>();
+        analysis = FindFirstObjectByType<AudioAnalysis>();
     }
 
     void Update()
@@ -33,7 +33,7 @@ public class AudioController : MonoBehaviour
         }
     }
 
-    public void Play()
+    public void PlayAudio()
     {
         vocals.Play();
         drums.Play();
@@ -41,8 +41,9 @@ public class AudioController : MonoBehaviour
         other.Play();
     }
 
-    public void Stop()
+    public void StopAudio()
     {
+        Debug.Log("CLICKY");
         vocals.Stop();
         drums.Stop();
         bass.Stop();
