@@ -37,14 +37,17 @@ public class CurrentSegmentChecker : MonoBehaviour
             {
                 SongEvents.TriggerSegementEnter(segementAtSeconds.label);
             }
+            lastSegment = segementAtSeconds;
         }
     }
 
     void Update()
     {
-        if(audioSource.clip == null) {
+        if (audioSource.clip == null)
+        {
             return;
         }
+
         timer += Time.deltaTime;
         if (timer >= timerCheckInterval)
         {
@@ -56,6 +59,7 @@ public class CurrentSegmentChecker : MonoBehaviour
     private void OnCurrentSongChanged(AnalysisResult result)
     {
         currentResult = result;
+        lastSegment = null;
     }
 
     void OnEnable()

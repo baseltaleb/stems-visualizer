@@ -724,20 +724,20 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -806,7 +806,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 270058896}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 22100000, guid: 889d83e845ba7c1429e5f12d01639504, type: 2}
   m_CullingMode: 0
@@ -1473,20 +1473,20 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -1568,7 +1568,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 686005993}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 22100000, guid: 8b8d610d552a88b458fa6b60d3060502, type: 2}
   m_CullingMode: 0
@@ -1827,7 +1827,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7793173887726982142, guid: e85cd37488e767640a22301af28db948, type: 3}
   m_PrefabInstance: {fileID: 1546705768}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1753385227}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9d4fa5f6f087c2840ae3afb3c7357ad5, type: 3}
@@ -4372,7 +4372,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 177638, guid: 0abab5bb77339e4428787a870eb31bd3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22451668, guid: 0abab5bb77339e4428787a870eb31bd3, type: 3}
       propertyPath: m_Pivot.x
@@ -4711,7 +4711,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4496609963976967611, guid: e85cd37488e767640a22301af28db948, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1753385230}
   m_SourcePrefab: {fileID: 100100000, guid: e85cd37488e767640a22301af28db948, type: 3}
 --- !u!1 &1553768819
 GameObject:
@@ -5133,6 +5136,23 @@ Transform:
   - {fileID: 1498404050}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1753385227 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4496609963976967611, guid: e85cd37488e767640a22301af28db948, type: 3}
+  m_PrefabInstance: {fileID: 1546705768}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1753385230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753385227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbed5884f44709e47a13a34a4572e59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1758903847
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5772,14 +5792,14 @@ PrefabInstance:
     - target: {fileID: 2021741161371432187, guid: ca6140f6136095c4a838c6742397c193, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 751359531}
+      objectReference: {fileID: 1753385230}
     - target: {fileID: 2021741161371432187, guid: ca6140f6136095c4a838c6742397c193, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: PickFile
       objectReference: {fileID: 0}
     - target: {fileID: 2021741161371432187, guid: ca6140f6136095c4a838c6742397c193, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: AudioController, Assembly-CSharp
+      value: FilePicker, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5145234970340577272, guid: ca6140f6136095c4a838c6742397c193, type: 3}
       propertyPath: m_Pivot.x

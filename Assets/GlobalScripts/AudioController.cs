@@ -33,6 +33,14 @@ public class AudioController : MonoBehaviour
         }
     }
 
+    void OnEnable() {
+        FilePicker.OnFilesPickedEvent += OnFilesPicked;
+    }
+
+    void OnDisable() {
+        FilePicker.OnFilesPickedEvent -= OnFilesPicked;
+    }
+
     public void PlayAudio()
     {
         vocals.Play();
@@ -94,24 +102,11 @@ public class AudioController : MonoBehaviour
         other.time += seconds;
     }
 
-    public void PickFile()
-    {
-        if (NativeFilePicker.IsFilePickerBusy())
-        {
-            return;
-        }
-
-        NativeFilePicker.Permission permission = NativeFilePicker.PickFile((path) =>
-        {
-            if (path == null)
-            {
-                Debug.Log("Operation cancelled");
-                return;
-            }
-            Debug.Log("Picked file: " + path);
-            StartAnalysis(path);
-        }, new string[] { "*" });
+    private void OnFilesPicked(string[] paths) {
+        Debug.Log("Picked file: " + paths[0]);
+        StartAnalysis(paths[0]);
     }
+
     // Call this method to start the analysis
     public void StartAnalysis(string filePath)
     {

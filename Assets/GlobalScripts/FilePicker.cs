@@ -1,37 +1,24 @@
-// using UnityEngine;
-// using UnityEngine.UI;
-// using System.Windows.Input;
-// using System.IO;
+using UnityEngine;
+using SFB;
 
-// public class FilePicker : MonoBehaviour
-// {
-//     public Button pickButton;
-//     public AudioAnlysis audioAnalyzer;
+public class FilePicker : MonoBehaviour
+{
+    public delegate void OnFilesPicked(string[] paths);
+    public static event OnFilesPicked OnFilesPickedEvent;
 
-//     void Start()
-//     {
-//         pickButton.onClick.AddListener(PickFile);
-//     }
-
-//     void PickFile()
-//     {
-//         FileDialog
-//         var openFileDialog = new OpenFileDialog
-//         {
-//             Filter = "Audio Files (*.mp3;*.wav)|*.mp3;*.wav|All files (*.*)|*.*",
-//             FilterIndex = 1,
-//             RestoreDirectory = true
-//         };
-
-//         if (openFileDialog.ShowDialog() == DialogResult.OK)
-//         {
-//             string filePath = openFileDialog.FileName;
-//             Debug.Log("Selected file: " + filePath);
-            
-//             // Start the analysis with the selected file
-//             audioAnalyzer.StartAnalysis(filePath);
-//         }
-//     }
-// }
+    public void PickFile()
+    {
+        StandaloneFileBrowser.OpenFilePanelAsync(
+            "Open File",
+            "",
+            "",
+            false,
+            (string[] paths) =>
+            {
+                OnFilesPickedEvent?.Invoke(paths);
+            }
+        );
+    }
+}
 
 
