@@ -21,7 +21,7 @@ public class OutputVolume : MonoBehaviour, IAudioSourceConsumer
 
     public enum OutputType
     {
-        PrefabBar, ObjectPosition, ObjectRotation, ObjectScale, LightIntensity
+        PrefabBar, ObjectPosition, ObjectRotation, ObjectScale, LightIntensity, None
     }
 
     [Serializable]

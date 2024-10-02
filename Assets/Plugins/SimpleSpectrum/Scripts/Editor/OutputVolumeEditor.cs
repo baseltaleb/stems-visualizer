@@ -145,6 +145,10 @@ public class OutputVolumeEditor : Editor
                 case 4: //light intensity
                     EditorGUILayout.PropertyField(propertyLightIntensity);
                     break;
+                case 5: //none
+                    EditorGUILayout.PropertyField(propertyOutputScaleMin);
+                    EditorGUILayout.PropertyField(propertyOutputScaleMax);
+                    break;
             }
         }
 
