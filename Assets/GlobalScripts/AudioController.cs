@@ -103,6 +103,10 @@ public class AudioController : MonoBehaviour
     }
 
     private void OnFilesPicked(string[] paths) {
+        if (paths.Length == 0) {
+            Debug.Log("No files picked");
+            return;
+        }
         Debug.Log("Picked file: " + paths[0]);
         StartAnalysis(paths[0]);
     }
