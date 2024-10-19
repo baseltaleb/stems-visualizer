@@ -24,20 +24,11 @@ public class CurrentSegmentChecker : MonoBehaviour
             s.start <= seconds && s.end >= seconds
         );
 
-        if (segementAtSeconds != null && segementAtSeconds != lastSegment)
+        if (segementAtSeconds != null && segementAtSeconds.label != lastSegment?.label)
         {
             Debug.Log("Segment changed from " + lastSegment?.label + " to " + segementAtSeconds?.label);
             lastSegment = segementAtSeconds;
-            // Replace inst with solo if solo is not present
-            if (segementAtSeconds.label == SegmentLabels.INST && !currentResult.segments.Any(s => s.label == "solo"))
-            {
-                SongEvents.TriggerSegementEnter(SegmentLabels.SOLO);
-            }
-            else
-            {
-                SongEvents.TriggerSegementEnter(segementAtSeconds.label);
-            }
-            lastSegment = segementAtSeconds;
+            SongEvents.TriggerSegementEnter(segementAtSeconds.label);
         }
     }
 

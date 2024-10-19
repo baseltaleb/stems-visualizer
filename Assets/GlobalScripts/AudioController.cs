@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Networking;
 public class AudioController : MonoBehaviour
 {
     public AudioSource vocals;
@@ -51,7 +48,6 @@ public class AudioController : MonoBehaviour
 
     public void StopAudio()
     {
-        Debug.Log("CLICKY");
         vocals.Stop();
         drums.Stop();
         bass.Stop();
@@ -116,15 +112,25 @@ public class AudioController : MonoBehaviour
     {
         Debug.Log("Starting analysis...");
 
-        var result = StartCoroutine(analysis.AnalyzeAudio(filePath, (result) =>
+       StartCoroutine(analysis.AnalyzeAudio(filePath, (result) =>
         {
             Debug.Log("Analysis finished");
             Debug.Log("Spectrogram data received");
             Debug.Log("Tempo: " + result.tempo);
             currentAnalysisResult = result;
-
-            // Debug.Log("Other length: " + result.spectrogram.other.Length);
+            
+            // Replace inst with solo if solo is not present
+            if (result.segments.All(segment => segment.label != SegmentLabels.SOLO))
+            {
+                foreach (var segment in result.segments.Where(segment => segment.label == SegmentLabels.INST))
+                {
+                    segment.label = SegmentLabels.SOLO;
+                }
+            }
+            
             Debug.Log("Number of segments: " + result.segments.Count);
+            StopAudio();
+            
             StartCoroutine(analysis.LoadAudio(result.session_id, "vocals", (audioClip) =>
             {
                 vocals.clip = audioClip;
