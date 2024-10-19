@@ -352,7 +352,7 @@ MonoBehaviour:
     m_Value: 0
   multiplier:
     m_OverrideState: 0
-    m_Value: 0.87
+    m_Value: 1
   upperHemisphereLuxValue:
     m_OverrideState: 0
     m_Value: 1
@@ -721,8 +721,8 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: {r: 0.08470026, g: 0, b: 0.1745283, a: 1}
   tint:
-    m_OverrideState: 0
-    m_Value: {r: 0.8860264, g: 0, b: 1, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 0.9603033, g: 0.6509434, b: 1, a: 1}
   maxFogDistance:
     m_OverrideState: 0
     m_Value: 5000
@@ -748,11 +748,11 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   albedo:
-    m_OverrideState: 1
-    m_Value: {r: 0.98572373, g: 0.8066038, b: 1, a: 1}
+    m_OverrideState: 0
+    m_Value: {r: 0.9259213, g: 0.08018869, b: 1, a: 1}
   globalLightProbeDimmer:
     m_OverrideState: 0
-    m_Value: 0.964
+    m_Value: 0.913
   depthExtent:
     m_OverrideState: 0
     m_Value: 64
@@ -809,10 +809,10 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   planetRadius:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 6378.1
   renderingSpace:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   centerMode:
     m_OverrideState: 0
