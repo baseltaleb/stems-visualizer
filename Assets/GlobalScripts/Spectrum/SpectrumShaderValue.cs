@@ -4,6 +4,7 @@ public class SpectrumShaderValue : MonoBehaviour
 {
     public OutputVolume outputVolume;
     public string shaderValueReference = "_Amblitude";
+    public float multiplier = 1;
     Material material;
 
     void Start()
@@ -15,6 +16,6 @@ public class SpectrumShaderValue : MonoBehaviour
 
     void Update()
     {
-        material.SetFloat(shaderValueReference, outputVolume.outputValue);
+        material.SetFloat(shaderValueReference, outputVolume.outputValue * multiplier);
     }
 }
