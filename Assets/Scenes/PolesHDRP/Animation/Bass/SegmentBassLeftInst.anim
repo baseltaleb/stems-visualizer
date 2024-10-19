@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SegmentVocalsChorus
+  m_Name: SegmentBassLeftInst
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -23,7 +23,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.8433546
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -33,9 +33,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.r
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -44,7 +44,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.23584905
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -54,9 +54,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.g
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -65,7 +65,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -75,9 +75,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.b
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left (1)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -86,7 +86,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -96,9 +96,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.a
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left (1)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -107,7 +107,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.75471693
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -117,9 +117,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.r
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left (2)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -128,7 +128,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -138,9 +138,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.g
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left (2)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -149,7 +149,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.6068849
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -159,9 +159,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.b
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left (3)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -170,7 +170,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -180,135 +180,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.a
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.2641509
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.r
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.g
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.22279996
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.b
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.a
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.66919553
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.r
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.3632075
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.g
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left (3)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -327,9 +201,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.b
-    path: 
-    classID: 23
+    attribute: m_Color.r
+    path: Bass Light Left
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -338,7 +212,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -348,9 +222,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.a
-    path: 
-    classID: 23
+    attribute: m_Color.r
+    path: Bass Light Left (1)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -359,7 +233,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 2.03
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -369,9 +243,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Emission_Multiplier
-    path: 
-    classID: 23
+    attribute: m_Color.r
+    path: Bass Light Left (2)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -380,7 +254,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -390,10 +264,94 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: multiplier
-    path: 
+    attribute: m_Color.r
+    path: Bass Light Left (3)
+    classID: 108
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left
     classID: 114
-    script: {fileID: 11500000, guid: d1a59e8678fe7be49b16ace4351848be, type: 3}
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left (1)
+    classID: 114
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left (2)
+    classID: 114
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left (3)
+    classID: 114
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
     flags: 0
   m_PPtrCurves: []
   m_SampleRate: 60
@@ -404,162 +362,144 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
-      attribute: 1334538786
+      path: 3394824101
+      attribute: 4215373228
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1602974242
+      path: 3394824101
+      attribute: 2334886179
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1871409698
+      path: 3960220484
+      attribute: 4215373228
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 2139845154
+      path: 3960220484
+      attribute: 2334886179
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1116690210
+      path: 3340859527
+      attribute: 4215373228
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1385125666
+      path: 3340859527
+      attribute: 2334886179
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1653561122
+      path: 3728361926
+      attribute: 4215373228
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1921996578
+      path: 3728361926
+      attribute: 2334886179
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1114910179
+      path: 3394824101
+      attribute: 2526845255
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1383345635
+      path: 3960220484
+      attribute: 2526845255
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1651781091
+      path: 3340859527
+      attribute: 2526845255
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1920216547
+      path: 3728361926
+      attribute: 2526845255
       script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      typeID: 108
+      customType: 25
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1291423192
-      script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      path: 3394824101
+      attribute: 2671321115
+      script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+      typeID: 114
+      customType: 0
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1559858648
-      script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      path: 3960220484
+      attribute: 2671321115
+      script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+      typeID: 114
+      customType: 0
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 1828294104
-      script: {fileID: 0}
-      typeID: 23
-      customType: 22
+      path: 3340859527
+      attribute: 2671321115
+      script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+      typeID: 114
+      customType: 0
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 0
-      attribute: 2096729560
-      script: {fileID: 0}
-      typeID: 23
-      customType: 22
-      isPPtrCurve: 0
-      isIntCurve: 0
-      isSerializeReferenceCurve: 0
-    - serializedVersion: 2
-      path: 0
-      attribute: 2387553378
-      script: {fileID: 0}
-      typeID: 23
-      customType: 22
-      isPPtrCurve: 0
-      isIntCurve: 0
-      isSerializeReferenceCurve: 0
-    - serializedVersion: 2
-      path: 0
-      attribute: 2761599323
-      script: {fileID: 11500000, guid: d1a59e8678fe7be49b16ace4351848be, type: 3}
+      path: 3728361926
+      attribute: 2671321115
+      script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
@@ -593,7 +533,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.8433546
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -603,9 +543,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.r
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -614,7 +554,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.23584905
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -624,9 +564,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.g
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -635,7 +575,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -645,9 +585,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.b
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left (1)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -656,7 +596,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -666,9 +606,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._PeakColor.a
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left (1)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -677,7 +617,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.75471693
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -687,9 +627,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.r
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left (2)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -698,7 +638,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -708,9 +648,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.g
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left (2)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -719,7 +659,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.6068849
+        value: 0.4528302
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -729,9 +669,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.b
-    path: 
-    classID: 23
+    attribute: m_Color.g
+    path: Bass Light Left (3)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -740,7 +680,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 0.4600869
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -750,135 +690,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Color.a
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.2641509
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.r
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.g
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.22279996
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.b
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Vallies_Emissive_Color.a
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.66919553
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.r
-    path: 
-    classID: 23
-    script: {fileID: 0}
-    flags: 0
-  - serializedVersion: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0.3632075
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.g
-    path: 
-    classID: 23
+    attribute: m_Color.b
+    path: Bass Light Left (3)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -897,9 +711,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.b
-    path: 
-    classID: 23
+    attribute: m_Color.r
+    path: Bass Light Left
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -908,7 +722,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -918,9 +732,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Peaks_Emissive_Color.a
-    path: 
-    classID: 23
+    attribute: m_Color.r
+    path: Bass Light Left (1)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -929,7 +743,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 2.03
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -939,9 +753,9 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._Vallies_Emission_Multiplier
-    path: 
-    classID: 23
+    attribute: m_Color.r
+    path: Bass Light Left (2)
+    classID: 108
     script: {fileID: 0}
     flags: 0
   - serializedVersion: 2
@@ -950,7 +764,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -960,10 +774,94 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: multiplier
-    path: 
+    attribute: m_Color.r
+    path: Bass Light Left (3)
+    classID: 108
+    script: {fileID: 0}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left
     classID: 114
-    script: {fileID: 11500000, guid: d1a59e8678fe7be49b16ace4351848be, type: 3}
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left (1)
+    classID: 114
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left (2)
+    classID: 114
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+    flags: 0
+  - serializedVersion: 2
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 2.8
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_VolumetricDimmer
+    path: Bass Light Left (3)
+    classID: 114
+    script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
     flags: 0
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
