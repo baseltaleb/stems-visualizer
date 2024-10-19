@@ -24,5 +24,9 @@ public class SegmentTriggerDebug : MonoBehaviour
         {
             SongEvents.TriggerSegementEnter(SegmentLabels.SOLO);
         }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            SongEvents.TriggerSegementEnter(SegmentLabels.INST);
+        }
     }
 }
