@@ -1,21 +1,42 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using NUnit.Framework.Internal;
 using UnityEngine;
+using R3;
+
 public class AudioController : MonoBehaviour
 {
     public AudioSource vocals;
     public AudioSource drums;
     public AudioSource bass;
     public AudioSource other;
+    public ReactiveProperty<AnalysisResult> CurrentAnalysisResult { get; private set; }
 
     public float[,] spectrogramData; // Your 2D spectrogram data for one stem
 
     private AudioAnalysis analysis;
-    private AnalysisResult currentAnalysisResult;
+    private CancellationTokenSource analysisCancellation;
 
     public void Awake()
     {
         analysis = FindFirstObjectByType<AudioAnalysis>();
+        CurrentAnalysisResult = new ReactiveProperty<AnalysisResult>();
+    }
+
+    void Start()
+    {
+        CurrentAnalysisResult
+            .SubscribeAwait(async (analysisResult, ct) =>
+            {
+                if (analysisResult != null)
+                {
+                    SanitizeAnalysisResult(analysisResult);
+                    await HandleAudio(analysisResult, ct);
+                    SongEvents.TriggerCurrentSongChange(analysisResult);
+                }
+            });
     }
 
     void Update()
@@ -24,17 +45,20 @@ public class AudioController : MonoBehaviour
         {
             PlaybackSkip(-10);
         }
+
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             PlaybackSkip(10);
         }
     }
 
-    void OnEnable() {
+    void OnEnable()
+    {
         FilePicker.OnFilesPickedEvent += OnFilesPicked;
     }
 
-    void OnDisable() {
+    void OnDisable()
+    {
         FilePicker.OnFilesPickedEvent -= OnFilesPicked;
     }
 
@@ -48,33 +72,34 @@ public class AudioController : MonoBehaviour
 
     public void StopAudio()
     {
-        vocals.Stop();
-        drums.Stop();
-        bass.Stop();
-        other.Stop();
+        AudioSource[] sources = { vocals, drums, bass, other };
+        foreach (var audioSource in sources)
+        {
+            audioSource.Stop();
+            audioSource.time = 0;
+        }
     }
 
     public void Mute(string clip)
     {
-        if (clip == "vocals")
+        switch (clip)
         {
-            vocals.mute = !vocals.mute;
-        }
-        else if (clip == "drums")
-        {
-            drums.mute = !drums.mute;
-        }
-        else if (clip == "bass")
-        {
-            bass.mute = !bass.mute;
-        }
-        else if (clip == "other")
-        {
-            other.mute = !other.mute;
+            case "vocals":
+                vocals.mute = !vocals.mute;
+                break;
+            case "drums":
+                drums.mute = !drums.mute;
+                break;
+            case "bass":
+                bass.mute = !bass.mute;
+                break;
+            case "other":
+                other.mute = !other.mute;
+                break;
         }
     }
 
-    public void PlaybackSkip(float seconds)
+    private void PlaybackSkip(float seconds)
     {
         if (vocals.time + seconds < 0)
         {
@@ -84,6 +109,7 @@ public class AudioController : MonoBehaviour
             other.time = 0;
             return;
         }
+
         if (vocals.time + seconds > vocals.clip.length)
         {
             vocals.time = vocals.clip.length;
@@ -92,71 +118,73 @@ public class AudioController : MonoBehaviour
             other.time = other.clip.length;
             return;
         }
+
         vocals.time += seconds;
         drums.time += seconds;
         bass.time += seconds;
         other.time += seconds;
     }
 
-    private void OnFilesPicked(string[] paths) {
-        if (paths.Length == 0) {
+    private void OnFilesPicked(string[] paths)
+    {
+        if (paths.Length == 0)
+        {
             Debug.Log("No files picked");
             return;
         }
+
         Debug.Log("Picked file: " + paths[0]);
         StartAnalysis(paths[0]);
     }
 
-    // Call this method to start the analysis
-    public void StartAnalysis(string filePath)
+    private void StartAnalysis(string filePath)
     {
+        StartAnalysisAsync(filePath).Forget();
+    }
+
+    private async UniTaskVoid StartAnalysisAsync(string filePath)
+    {
+        analysisCancellation?.Cancel();
+
         Debug.Log("Starting analysis...");
 
-       StartCoroutine(analysis.AnalyzeAudio(filePath, (result) =>
+        var analysisResult = await analysis.AnalyzeAudioAsync(filePath);
+
+        Debug.Log(
+            $"Analysis result: Tempo: {analysisResult.tempo}, Number of segments: {analysisResult.segments.Count}"
+        );
+
+        CurrentAnalysisResult.Value = analysisResult;
+
+        // spectrogramData = ConvertToMultidimensionalArray(result.spectrogram.other);
+        // timePerStep = 1 / result.spectrogram.fps;
+        // spectrogramData = result.spectrogram.other;
+    }
+
+    private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)
+    {
+        StopAudio();
+        var vocalsClip = await analysis.LoadAudioAsync(analysisResult.session_id, "vocals", ct);
+        var drumClip = await analysis.LoadAudioAsync(analysisResult.session_id, "drums", ct);
+        var bassClip = await analysis.LoadAudioAsync(analysisResult.session_id, "bass", ct);
+        var otherClip = await analysis.LoadAudioAsync(analysisResult.session_id, "other", ct);
+
+        vocals.clip = vocalsClip;
+        drums.clip = drumClip;
+        bass.clip = bassClip;
+        other.clip = otherClip;
+    }
+
+    private void SanitizeAnalysisResult(AnalysisResult analysisResult1)
+    {
+        // Replace inst with solo if solo is not present
+        if (analysisResult1.segments.All(segment => segment.label != SegmentLabels.SOLO))
         {
-            Debug.Log("Analysis finished");
-            Debug.Log("Spectrogram data received");
-            Debug.Log("Tempo: " + result.tempo);
-            currentAnalysisResult = result;
-            
-            // Replace inst with solo if solo is not present
-            if (result.segments.All(segment => segment.label != SegmentLabels.SOLO))
+            foreach (var segment in analysisResult1.segments.Where(segment => segment.label == SegmentLabels.INST))
             {
-                foreach (var segment in result.segments.Where(segment => segment.label == SegmentLabels.INST))
-                {
-                    segment.label = SegmentLabels.SOLO;
-                }
+                segment.label = SegmentLabels.SOLO;
             }
-            
-            Debug.Log("Number of segments: " + result.segments.Count);
-            StopAudio();
-            
-            StartCoroutine(analysis.LoadAudio(result.session_id, "vocals", (audioClip) =>
-            {
-                vocals.clip = audioClip;
-            }));
-            StartCoroutine(analysis.LoadAudio(result.session_id, "drums", (audioClip) =>
-            {
-                drums.clip = audioClip;
-            }));
-            StartCoroutine(analysis.LoadAudio(result.session_id, "bass", (audioClip) =>
-            {
-                bass.clip = audioClip;
-            }));
-            StartCoroutine(analysis.LoadAudio(result.session_id, "other", (audioClip) =>
-            {
-                other.clip = audioClip;
-            }));
-            vocals.time = 0;
-            drums.time = 0;
-            bass.time = 0;
-            other.time = 0;
-            
-            SongEvents.TriggerCurrentSongChange(result);
-            // spectrogramData = ConvertToMultidimensionalArray(result.spectrogram.other);
-            // timePerStep = 1 / result.spectrogram.fps;
-            // spectrogramData = result.spectrogram.other;
-        }));
+        }
     }
 
     private float[,] ConvertToMultidimensionalArray(List<List<float>> nestedList)
