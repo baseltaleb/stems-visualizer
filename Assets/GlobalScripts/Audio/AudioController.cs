@@ -2,14 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using NUnit.Framework.Internal;
 using UnityEngine;
 using R3;
 
 public class AudioController : MonoBehaviour
 {
-    public bool UseMainAudioTrack = false;
-
     public AudioSource main;
     public AudioSource vocals;
     public AudioSource drums;
@@ -46,17 +43,9 @@ public class AudioController : MonoBehaviour
                 }
             });
 
-        Observable
-            .EveryValueChanged(this, value => value.UseMainAudioTrack)
-            .Subscribe(value =>
-                {
-                    var sources = new[] { vocals, drums, bass, other };
-                    if (value)
-                        sources[^1] = main;
+        playbackController.SetAudioSources(new[] { vocals, drums, bass, other, main });
 
-                    playbackController.SetAudioSources(sources);
-                }
-            );
+        Mute(StemNames.MAIN);
     }
 
     void Update()
@@ -94,7 +83,29 @@ public class AudioController : MonoBehaviour
 
     public void Mute(string stemName)
     {
+        var sources = new[] { vocals, drums, bass, other };
+        if (!main.mute)
+        {
+            foreach (var audioSource in sources)
+            {
+                playbackController.SetMute(audioSource.tag, false);
+            }
+
+            playbackController.SetMute(main.tag, true);
+        }
+
         playbackController.ToggleMute(StemNames.GetTag(stemName));
+
+        // If none of the sources are muted, mute all sources and unmute main
+        if (sources.All(source => !source.mute))
+        {
+            foreach (var audioSource in sources)
+            {
+                playbackController.SetMute(audioSource.tag, true);
+            }
+
+            playbackController.SetMute(main.tag, false);
+        }
     }
 
     private void OnFilesPicked(string[] paths)
@@ -121,6 +132,7 @@ public class AudioController : MonoBehaviour
         Debug.Log("Starting analysis...");
 
         var analysisResult = await analysis.AnalyzeAudioAsync(filePath);
+        analysisResult.mainFilePath = filePath;
 
         Debug.Log(
             $"Analysis result: Tempo: {analysisResult.tempo}, Number of segments: {analysisResult.segments.Count}"
@@ -133,15 +145,26 @@ public class AudioController : MonoBehaviour
     {
         StopAudio();
 
-        var vocalsClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.VOCALS, ct);
-        var drumClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.DRUMS, ct);
-        var bassClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.BASS, ct);
-        var otherClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.OTHER, ct);
+        foreach (var stem in new[] { StemNames.VOCALS, StemNames.DRUMS, StemNames.BASS, StemNames.OTHER })
+        {
+            var filePath = await analysis.GetCachedFilePath(sessionId: analysisResult.session_id, stem, ct);
+            var audioClip = await analysis.GetAudioClip(filePath, ct);
 
-        vocals.clip = vocalsClip;
-        drums.clip = drumClip;
-        bass.clip = bassClip;
-        other.clip = otherClip;
+            if (audioClip != null)
+            {
+                playbackController.SetClip(audioClip, StemNames.GetTag(stem));
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find audio clip: {filePath}");
+            }
+        }
+
+        var mainClip = await analysis.GetAudioClip(analysisResult.mainFilePath, ct);
+        if (mainClip != null)
+        {
+            playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN));
+        }
     }
 
     private void SanitizeAnalysisResult(AnalysisResult analysisResult1)

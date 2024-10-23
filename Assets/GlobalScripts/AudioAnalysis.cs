@@ -38,28 +38,27 @@ class AudioAnalysis : MonoBehaviour
 
         return result;
     }
-    public void ClearFiles()
-    {
-        // Look for 
-        
-    }
-    public async UniTask<AudioClip> LoadAudioAsync(string sessionId, string stemName, CancellationToken ct)
+
+    public async UniTask<string> GetCachedFilePath(string sessionId, string stemName, CancellationToken ct)
     {
         var fileName = stemName + AudioExtension;
         var cacheFilePath = FileCacheManager.GetFileCachePath(sessionId, fileName);
 
         if (!FileCacheManager.IsCached(cacheFilePath))
         {
-            fileDownloadCts?.Cancel();
-            fileDownloadCts = new CancellationTokenSource();
             await DownloadStemFileAsync(
                 sessionId: sessionId,
                 fileName: fileName,
                 storagePath: cacheFilePath,
-                fileDownloadCts.Token
+                ct
             );
         }
-        
+
+        return cacheFilePath;
+    }
+
+    public async UniTask<AudioClip> GetAudioClip(string cacheFilePath, CancellationToken ct)
+    {
         UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(cacheFilePath, AudioType.MPEG);
         await www.SendWebRequest().WithCancellation(ct);
         if (www.result != UnityWebRequest.Result.Success)

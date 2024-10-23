@@ -37,6 +37,7 @@ public class AnalysisResult
     public List<Segment> segments;
     // public Spectrogram spectrogram;
     public float tempo;
+    public string mainFilePath = null;
 }
 
 public static class SegmentLabels {
