@@ -2,11 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 using R3;
+using UnityEngine;
+using UnityEngine.Audio;
 
 public class AudioController : MonoBehaviour
 {
+    public AudioMixerSnapshot mainEnabledSnapshot;
+    public AudioMixerSnapshot mainDisabledSnapshot;
+
     public AudioSource main;
     public AudioSource vocals;
     public AudioSource drums;
@@ -15,6 +19,7 @@ public class AudioController : MonoBehaviour
 
     public ReactiveProperty<AnalysisResult> CurrentAnalysisResult { get; private set; }
 
+    private AudioMixerSnapshot activeSnapshot;
     private AudioPlaybackController playbackController = new();
     private AudioAnalysis analysis;
     private CancellationTokenSource analysisCancellation;
@@ -45,7 +50,7 @@ public class AudioController : MonoBehaviour
 
         playbackController.SetAudioSources(new[] { vocals, drums, bass, other, main });
 
-        Mute(StemNames.MAIN);
+        activeSnapshot = mainEnabledSnapshot;
     }
 
     void Update()
@@ -83,29 +88,22 @@ public class AudioController : MonoBehaviour
 
     public void Mute(string stemName)
     {
-        var sources = new[] { vocals, drums, bass, other };
-        if (!main.mute)
-        {
-            foreach (var audioSource in sources)
-            {
-                playbackController.SetMute(audioSource.tag, false);
-            }
-
-            playbackController.SetMute(main.tag, true);
-        }
-
         playbackController.ToggleMute(StemNames.GetTag(stemName));
+
+        var sources = new[] { vocals, drums, bass, other };
+
+        if (activeSnapshot == mainEnabledSnapshot)
+        {
+            activeSnapshot = mainDisabledSnapshot;
+        }
 
         // If none of the sources are muted, mute all sources and unmute main
         if (sources.All(source => !source.mute))
         {
-            foreach (var audioSource in sources)
-            {
-                playbackController.SetMute(audioSource.tag, true);
-            }
-
-            playbackController.SetMute(main.tag, false);
+            activeSnapshot = mainEnabledSnapshot;
         }
+
+        activeSnapshot.TransitionTo(0.0f);
     }
 
     private void OnFilesPicked(string[] paths)
