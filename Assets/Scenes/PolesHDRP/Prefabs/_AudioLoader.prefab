@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6200746534882219741}
   - component: {fileID: 8117078311090797962}
   m_Layer: 0
-  m_Name: better
+  m_Name: main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -308,6 +308,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4fa5f6f087c2840ae3afb3c7357ad5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UseMainAudioTrack: 0
+  main: {fileID: 8117078311090797962}
   vocals: {fileID: 4127627956647542160}
   drums: {fileID: 6380667367548826356}
   bass: {fileID: 395958587372453653}

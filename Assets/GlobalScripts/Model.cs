@@ -40,14 +40,28 @@ public class AnalysisResult
 }
 
 public static class SegmentLabels {
-    public static string INTRO = "intro";
-    public static string OUTRO = "outro";
-    public static string BREAK = "break";
-    public static string BRIDGE = "bridge";
-    public static string INST = "inst";
-    public static string SOLO = "solo";
-    public static string VERSE = "verse";
-    public static string CHORUS = "chorus";
-    public static string START = "start";
-    public static string END = "end";
+    public const string INTRO = "intro";
+    public const string OUTRO = "outro";
+    public const string BREAK = "break";
+    public const string BRIDGE = "bridge";
+    public const string INST = "inst";
+    public const string SOLO = "solo";
+    public const string VERSE = "verse";
+    public const string CHORUS = "chorus";
+    public const string START = "start";
+    public const string END = "end";
+}
+
+public static class StemNames
+{
+    public const string MAIN = "main";
+    public const string BASS = "bass";
+    public const string DRUMS = "drums";
+    public const string OTHER = "other";
+    public const string VOCALS = "vocals";
+
+    public static string GetTag(string stemName)
+    {
+        return $"stem-{stemName}";
+    }
 }

@@ -8,14 +8,17 @@ using R3;
 
 public class AudioController : MonoBehaviour
 {
+    public bool UseMainAudioTrack = false;
+
+    public AudioSource main;
     public AudioSource vocals;
     public AudioSource drums;
     public AudioSource bass;
     public AudioSource other;
+
     public ReactiveProperty<AnalysisResult> CurrentAnalysisResult { get; private set; }
 
-    public float[,] spectrogramData; // Your 2D spectrogram data for one stem
-
+    private AudioPlaybackController playbackController = new();
     private AudioAnalysis analysis;
     private CancellationTokenSource analysisCancellation;
 
@@ -23,6 +26,11 @@ public class AudioController : MonoBehaviour
     {
         analysis = FindFirstObjectByType<AudioAnalysis>();
         CurrentAnalysisResult = new ReactiveProperty<AnalysisResult>();
+        main.tag = StemNames.GetTag(StemNames.MAIN);
+        vocals.tag = StemNames.GetTag(StemNames.VOCALS);
+        drums.tag = StemNames.GetTag(StemNames.DRUMS);
+        bass.tag = StemNames.GetTag(StemNames.BASS);
+        other.tag = StemNames.GetTag(StemNames.OTHER);
     }
 
     void Start()
@@ -37,18 +45,30 @@ public class AudioController : MonoBehaviour
                     SongEvents.TriggerCurrentSongChange(analysisResult);
                 }
             });
+
+        Observable
+            .EveryValueChanged(this, value => value.UseMainAudioTrack)
+            .Subscribe(value =>
+                {
+                    var sources = new[] { vocals, drums, bass, other };
+                    if (value)
+                        sources[^1] = main;
+
+                    playbackController.SetAudioSources(sources);
+                }
+            );
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            PlaybackSkip(-10);
+            playbackController.Skip(-10);
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            PlaybackSkip(10);
+            playbackController.Skip(10);
         }
     }
 
@@ -64,65 +84,17 @@ public class AudioController : MonoBehaviour
 
     public void PlayAudio()
     {
-        vocals.Play();
-        drums.Play();
-        bass.Play();
-        other.Play();
+        playbackController.PlayAudio();
     }
 
     public void StopAudio()
     {
-        AudioSource[] sources = { vocals, drums, bass, other };
-        foreach (var audioSource in sources)
-        {
-            audioSource.Stop();
-            audioSource.time = 0;
-        }
+        playbackController.StopAudio();
     }
 
-    public void Mute(string clip)
+    public void Mute(string stemName)
     {
-        switch (clip)
-        {
-            case "vocals":
-                vocals.mute = !vocals.mute;
-                break;
-            case "drums":
-                drums.mute = !drums.mute;
-                break;
-            case "bass":
-                bass.mute = !bass.mute;
-                break;
-            case "other":
-                other.mute = !other.mute;
-                break;
-        }
-    }
-
-    private void PlaybackSkip(float seconds)
-    {
-        if (vocals.time + seconds < 0)
-        {
-            vocals.time = 0;
-            drums.time = 0;
-            bass.time = 0;
-            other.time = 0;
-            return;
-        }
-
-        if (vocals.time + seconds > vocals.clip.length)
-        {
-            vocals.time = vocals.clip.length;
-            drums.time = drums.clip.length;
-            bass.time = bass.clip.length;
-            other.time = other.clip.length;
-            return;
-        }
-
-        vocals.time += seconds;
-        drums.time += seconds;
-        bass.time += seconds;
-        other.time += seconds;
+        playbackController.ToggleMute(StemNames.GetTag(stemName));
     }
 
     private void OnFilesPicked(string[] paths)
@@ -155,19 +127,16 @@ public class AudioController : MonoBehaviour
         );
 
         CurrentAnalysisResult.Value = analysisResult;
-
-        // spectrogramData = ConvertToMultidimensionalArray(result.spectrogram.other);
-        // timePerStep = 1 / result.spectrogram.fps;
-        // spectrogramData = result.spectrogram.other;
     }
 
     private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)
     {
         StopAudio();
-        var vocalsClip = await analysis.LoadAudioAsync(analysisResult.session_id, "vocals", ct);
-        var drumClip = await analysis.LoadAudioAsync(analysisResult.session_id, "drums", ct);
-        var bassClip = await analysis.LoadAudioAsync(analysisResult.session_id, "bass", ct);
-        var otherClip = await analysis.LoadAudioAsync(analysisResult.session_id, "other", ct);
+
+        var vocalsClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.VOCALS, ct);
+        var drumClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.DRUMS, ct);
+        var bassClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.BASS, ct);
+        var otherClip = await analysis.LoadAudioAsync(analysisResult.session_id, StemNames.OTHER, ct);
 
         vocals.clip = vocalsClip;
         drums.clip = drumClip;
