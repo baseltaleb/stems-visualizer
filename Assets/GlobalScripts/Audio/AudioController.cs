@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -23,6 +24,7 @@ public class AudioController : MonoBehaviour
     private AudioPlaybackController playbackController = new();
     private AudioAnalysis analysis;
     private CancellationTokenSource analysisCancellation;
+    private bool isMainTrackAvailable = false;
 
     public void Awake()
     {
@@ -89,21 +91,23 @@ public class AudioController : MonoBehaviour
     public void Mute(string stemName)
     {
         playbackController.ToggleMute(StemNames.GetTag(stemName));
-
-        var sources = new[] { vocals, drums, bass, other };
-
-        if (activeSnapshot == mainEnabledSnapshot)
+        
+        if (isMainTrackAvailable)
         {
-            activeSnapshot = mainDisabledSnapshot;
-        }
+            var sources = new[] { vocals, drums, bass, other };
+            if (activeSnapshot == mainEnabledSnapshot)
+            {
+                activeSnapshot = mainDisabledSnapshot;
+            }
 
-        // If none of the sources are muted, mute all sources and unmute main
-        if (sources.All(source => !source.mute))
-        {
-            activeSnapshot = mainEnabledSnapshot;
-        }
+            // If none of the sources are muted, mute all sources and unmute main
+            if (sources.All(source => !source.mute))
+            {
+                activeSnapshot = mainEnabledSnapshot;
+            }
 
-        activeSnapshot.TransitionTo(0.0f);
+            activeSnapshot.TransitionTo(0.0f);
+        }
     }
 
     private void OnFilesPicked(string[] paths)
@@ -158,10 +162,18 @@ public class AudioController : MonoBehaviour
             }
         }
 
-        var mainClip = await analysis.GetAudioClip(analysisResult.mainFilePath, ct);
-        if (mainClip != null)
+        try
         {
+            var mainClip = await analysis.GetAudioClip(analysisResult.mainFilePath, ct);
             playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN));
+            isMainTrackAvailable = true;
+        }
+        catch (Exception ex)
+        {
+            isMainTrackAvailable = false;
+            activeSnapshot = mainDisabledSnapshot;
+            activeSnapshot.TransitionTo(0.0f);
+            Debug.LogError($"Error getting main clip: {ex.Message}");
         }
     }
 

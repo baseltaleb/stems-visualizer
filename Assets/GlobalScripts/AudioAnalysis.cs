@@ -59,6 +59,11 @@ class AudioAnalysis : MonoBehaviour
 
     public async UniTask<AudioClip> GetAudioClip(string cacheFilePath, CancellationToken ct)
     {
+        if (cacheFilePath.StartsWith("\\"))
+        {
+            cacheFilePath = cacheFilePath.Replace(@"\", @"/");
+            cacheFilePath = @"file:///" + cacheFilePath;
+        }
         UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(cacheFilePath, AudioType.MPEG);
         await www.SendWebRequest().WithCancellation(ct);
         if (www.result != UnityWebRequest.Result.Success)
