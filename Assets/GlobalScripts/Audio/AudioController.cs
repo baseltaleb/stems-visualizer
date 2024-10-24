@@ -23,7 +23,7 @@ public class AudioController : MonoBehaviour
     private AudioMixerSnapshot activeSnapshot;
     private readonly AudioPlaybackController playbackController = new();
     private readonly AudioPlaylistController playlistController = new();
-    private readonly AudioAnalysis analysis = new();
+    private readonly AudioAnalysisApi analysisApi = new();
 
     private CancellationTokenSource analysisCancellation;
     private bool isMainTrackAvailable = false;
@@ -135,7 +135,7 @@ public class AudioController : MonoBehaviour
 
         Debug.Log("Starting analysis...");
 
-        var analysisResult = await analysis.AnalyzeAudioAsync(filePath);
+        var analysisResult = await analysisApi.AnalyzeAudioAsync(filePath);
         analysisResult.mainFilePath = filePath;
 
         Debug.Log(
@@ -151,8 +151,8 @@ public class AudioController : MonoBehaviour
 
         foreach (var stem in new[] { StemNames.VOCALS, StemNames.DRUMS, StemNames.BASS, StemNames.OTHER })
         {
-            var filePath = await analysis.GetCachedFilePath(sessionId: analysisResult.session_id, stem, ct);
-            var audioClip = await analysis.GetAudioClip(filePath, ct);
+            var filePath = await analysisApi.GetCachedFilePath(sessionId: analysisResult.session_id, stem, ct);
+            var audioClip = await analysisApi.GetAudioClip(filePath, ct);
 
             if (audioClip != null)
             {
@@ -166,7 +166,7 @@ public class AudioController : MonoBehaviour
 
         try
         {
-            var mainClip = await analysis.GetAudioClip(analysisResult.mainFilePath, ct);
+            var mainClip = await analysisApi.GetAudioClip(analysisResult.mainFilePath, ct);
             playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN));
             isMainTrackAvailable = true;
         }

@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using Cysharp.Threading.Tasks;
 
-class AudioAnalysis
+class AudioAnalysisApi
 {
     private const string ServerUrl = "http://localhost:5000";
     private const string AudioExtension = ".mp3";
