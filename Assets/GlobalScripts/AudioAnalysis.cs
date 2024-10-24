@@ -6,10 +6,9 @@ using UnityEngine.Networking;
 using Newtonsoft.Json;
 using Cysharp.Threading.Tasks;
 
-class AudioAnalysis : MonoBehaviour
+class AudioAnalysis
 {
-    public string serverUrl = "http://localhost:5000";
-
+    private const string ServerUrl = "http://localhost:5000";
     private const string AudioExtension = ".mp3";
     private CancellationTokenSource fileDownloadCts;
 
@@ -22,7 +21,7 @@ class AudioAnalysis : MonoBehaviour
         byte[] audioData = await File.ReadAllBytesAsync(filePath);
         form.AddBinaryData("audio", audioData, Path.GetFileName(filePath), "audio/mp3");
 
-        UnityWebRequest www = UnityWebRequest.Post(serverUrl + "/segment", form);
+        UnityWebRequest www = UnityWebRequest.Post(ServerUrl + "/segment", form);
         www.SetRequestHeader("Accept", "application/json");
 
         await www.SendWebRequest();
@@ -83,7 +82,7 @@ class AudioAnalysis : MonoBehaviour
         CancellationToken ct
     )
     {
-        var url = serverUrl + "/" + "file/" + sessionId + "/" + fileName;
+        var url = ServerUrl + "/" + "file/" + sessionId + "/" + fileName;
         var uwr = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET);
         uwr.downloadHandler = new DownloadHandlerFile(storagePath);
         await uwr.SendWebRequest().WithCancellation(ct);

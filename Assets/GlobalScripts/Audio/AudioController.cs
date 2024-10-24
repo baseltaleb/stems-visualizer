@@ -21,14 +21,15 @@ public class AudioController : MonoBehaviour
     public ReactiveProperty<AnalysisResult> CurrentAnalysisResult { get; private set; }
 
     private AudioMixerSnapshot activeSnapshot;
-    private AudioPlaybackController playbackController = new();
-    private AudioAnalysis analysis;
+    private readonly AudioPlaybackController playbackController = new();
+    private readonly AudioPlaylistController playlistController = new();
+    private readonly AudioAnalysis analysis = new();
+
     private CancellationTokenSource analysisCancellation;
     private bool isMainTrackAvailable = false;
 
     public void Awake()
     {
-        analysis = FindFirstObjectByType<AudioAnalysis>();
         CurrentAnalysisResult = new ReactiveProperty<AnalysisResult>();
         main.tag = StemNames.GetTag(StemNames.MAIN);
         vocals.tag = StemNames.GetTag(StemNames.VOCALS);
@@ -91,7 +92,7 @@ public class AudioController : MonoBehaviour
     public void Mute(string stemName)
     {
         playbackController.ToggleMute(StemNames.GetTag(stemName));
-        
+
         if (isMainTrackAvailable)
         {
             var sources = new[] { vocals, drums, bass, other };
@@ -119,7 +120,8 @@ public class AudioController : MonoBehaviour
         }
 
         Debug.Log("Picked file: " + paths[0]);
-        StartAnalysis(paths[0]);
+        playlistController.SetFiles(paths);
+        StartAnalysis(paths[0]); // TODO: move to AAC
     }
 
     private void StartAnalysis(string filePath)
