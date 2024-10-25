@@ -12,7 +12,7 @@ public class FilePicker : MonoBehaviour
             "Open File",
             "",
             "",
-            false,
+            true,
             (string[] paths) =>
             {
                 OnFilesPickedEvent?.Invoke(paths);
