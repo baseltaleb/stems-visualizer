@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AudioPlaylistController
 {
-    public readonly ReactiveProperty<List<string>> CurrentPlaylist = new();
+    public readonly ReactiveProperty<List<string>> CurrentPlaylist = new(new List<string>());
     public readonly ReactiveProperty<string> CurrentFile = new();
 
     public void SetFiles(string[] files)
@@ -39,9 +39,9 @@ public class AudioPlaylistController
 
     public void MoveToNextFile()
     {
-        if (CurrentPlaylist.Value.Count == 0)
+        if (CurrentPlaylist.Value.Count < 1)
         {
-            Debug.LogError("No files in current playlist");
+            Debug.LogWarning("Cannot move to next file");
             return;
         }
 
@@ -52,14 +52,19 @@ public class AudioPlaylistController
 
     public void MoveToPreviousFile()
     {
-        if (CurrentPlaylist.Value.Count == 0)
+        if (CurrentPlaylist.Value.Count < 1)
         {
-            Debug.LogError("No files in current playlist");
+            Debug.LogWarning("Cannot move to next file");
             return;
         }
 
         var currentIndex = CurrentPlaylist.Value.IndexOf(CurrentFile.Value);
         var previousIndex = (currentIndex - 1 + CurrentPlaylist.Value.Count) % CurrentPlaylist.Value.Count;
         CurrentFile.Value = CurrentPlaylist.Value[previousIndex];
+    }
+
+    public bool HasNextFile()
+    {
+         return CurrentPlaylist.Value.IndexOf(CurrentFile.Value) < CurrentPlaylist.Value.Count - 1;
     }
 }

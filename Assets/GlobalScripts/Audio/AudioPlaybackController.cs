@@ -1,14 +1,50 @@
 using System;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using R3;
 using UnityEngine;
 
 public class AudioPlaybackController
 {
+    public readonly SynchronizedReactiveProperty<bool> IsPlaying = new(false);
+    public readonly ReactiveProperty<int> SongEnded = new();
+
     private AudioSource[] audioSources;
+    private AudioSource sampleSource;
 
     public void SetAudioSources(AudioSource[] sources)
     {
         audioSources = sources;
+        IsPlaying
+            .DistinctUntilChanged()
+            .SubscribeAwait(async (playing, ct) =>
+            {
+                if (playing)
+                    await PlayAudioAsync(ct);
+                else
+                {
+                    foreach (var audioSource in audioSources)
+                    {
+                        audioSource.Stop();
+                        audioSource.time = 0;
+                    }
+                }
+            });
+
+        Observable
+            .EveryUpdate()
+            .Subscribe(_ =>
+            {
+                if (IsPlaying.CurrentValue && GetCurrentTime() >= (sampleSource?.clip?.length ?? 0))
+                {
+                    Debug.Log("Song ended");
+                    var playing = IsPlaying.CurrentValue;
+                    IsPlaying.Value = false;
+                    SongEnded.Value++;
+                    if (playing) SongEnded.ForceNotify();
+                }
+            });
     }
 
     public void SetClip(AudioClip clip, string tag)
@@ -17,6 +53,7 @@ public class AudioPlaybackController
         {
             var source = audioSources.First(source => source.CompareTag(tag));
             source.clip = clip;
+            sampleSource = source;
         }
         catch (InvalidOperationException e)
         {
@@ -26,19 +63,12 @@ public class AudioPlaybackController
 
     public void PlayAudio()
     {
-        foreach (var audioSource in audioSources)
-        {
-            audioSource.Play();
-        }
+        IsPlaying.Value = true;
     }
 
     public void StopAudio()
     {
-        foreach (var audioSource in audioSources)
-        {
-            audioSource.Stop();
-            audioSource.time = 0;
-        }
+        IsPlaying.Value = false;
     }
 
     public void PauseAudio()
@@ -60,17 +90,46 @@ public class AudioPlaybackController
         var source = audioSources.First(source => source.CompareTag(tag));
         source.mute = mute;
     }
-    
+
     public void Skip(float seconds)
     {
         var source = audioSources[0];
-        var currentTime = source.time;
+        var targetTime = source.time + seconds;
+        
+        if (targetTime < 0)
+        {
+            targetTime = 0;
+        }
 
-        var targetTime = Mathf.Clamp(currentTime + seconds, 0, source.clip.length);
+        if (targetTime > source.clip.length)
+        {
+            targetTime = source.clip.length;
+        }
 
         foreach (var audioSource in audioSources)
         {
             audioSource.time = targetTime;
+        }
+    }
+
+    public float GetCurrentTime()
+    {
+        return sampleSource?.time ?? 0f;
+    }
+
+    private async UniTask PlayAudioAsync(CancellationToken ct)
+    {
+        foreach (var audioSource in audioSources)
+        {
+            while (audioSource.clip.loadState != AudioDataLoadState.Loaded)
+            {
+                await UniTask.Delay(100, cancellationToken: ct);
+            }
+        }
+
+        foreach (var audioSource in audioSources)
+        {
+            audioSource.Play();
         }
     }
 }

@@ -12,7 +12,7 @@ class AudioAnalysisApi
     private const string AudioExtension = ".mp3";
     private CancellationTokenSource fileDownloadCts;
 
-    public async UniTask<AnalysisResult> AnalyzeAudioAsync(string filePath)
+    public async UniTask<AnalysisResult> AnalyzeAudioAsync(string filePath, CancellationToken ct)
     {
         Debug.Log("Starting request for file " + filePath);
         WWWForm form = new WWWForm();
@@ -24,7 +24,7 @@ class AudioAnalysisApi
         UnityWebRequest www = UnityWebRequest.Post(ServerUrl + "/segment", form);
         www.SetRequestHeader("Accept", "application/json");
 
-        await www.SendWebRequest();
+        await www.SendWebRequest().WithCancellation(ct);
 
         if (www.result != UnityWebRequest.Result.Success)
         {

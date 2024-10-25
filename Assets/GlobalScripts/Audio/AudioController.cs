@@ -18,19 +18,19 @@ public class AudioController : MonoBehaviour
     public AudioSource bass;
     public AudioSource other;
 
-    public ReactiveProperty<AnalysisResult> CurrentAnalysisResult { get; private set; }
+    private readonly AudioAnalysisApi analysisApi = new();
 
     private AudioMixerSnapshot activeSnapshot;
     private readonly AudioPlaybackController playbackController = new();
     private readonly AudioPlaylistController playlistController = new();
-    private readonly AudioAnalysisApi analysisApi = new();
+    private AudioAnalysisController analysisController;
 
     private CancellationTokenSource analysisCancellation;
     private bool isMainTrackAvailable = false;
 
     public void Awake()
     {
-        CurrentAnalysisResult = new ReactiveProperty<AnalysisResult>();
+        analysisController = new AudioAnalysisController(analysisApi);
         main.tag = StemNames.GetTag(StemNames.MAIN);
         vocals.tag = StemNames.GetTag(StemNames.VOCALS);
         drums.tag = StemNames.GetTag(StemNames.DRUMS);
@@ -40,17 +40,33 @@ public class AudioController : MonoBehaviour
 
     void Start()
     {
-        CurrentAnalysisResult
+        playlistController
+            .CurrentFile
+            .DistinctUntilChanged()
+            .CombineLatest(analysisController.AnalyzedFiles, (currentFile, analyzedFiles) =>
+            {
+                if (currentFile == null) return null;
+                var matchingResult = analyzedFiles.FirstOrDefault(result => result.mainFilePath == currentFile);
+                return matchingResult;
+            })
+            .WhereNotNull()
             .SubscribeAwait(async (analysisResult, ct) =>
             {
-                if (analysisResult != null)
-                {
-                    SanitizeAnalysisResult(analysisResult);
-                    await HandleAudio(analysisResult, ct);
-                    SongEvents.TriggerCurrentSongChange(analysisResult);
-                }
+                await HandleAudio(analysisResult, ct);
+                SongEvents.TriggerCurrentSongChange(analysisResult);
             });
 
+        playbackController
+            .SongEnded
+            .DistinctUntilChanged()
+            .Subscribe(_ =>
+            {
+                if (playlistController.HasNextFile())
+                {
+                    playlistController.MoveToNextFile();
+                }
+            });
+    
         playbackController.SetAudioSources(new[] { vocals, drums, bass, other, main });
 
         activeSnapshot = mainEnabledSnapshot;
@@ -111,6 +127,16 @@ public class AudioController : MonoBehaviour
         }
     }
 
+    public void NextSong()
+    {
+        playlistController.MoveToNextFile();
+    }
+
+    public void PreviousSong()
+    {
+        playlistController.MoveToPreviousFile();
+    }
+
     private void OnFilesPicked(string[] paths)
     {
         if (paths.Length == 0)
@@ -121,32 +147,12 @@ public class AudioController : MonoBehaviour
 
         Debug.Log("Picked file: " + paths[0]);
         playlistController.SetFiles(paths);
-        StartAnalysis(paths[0]); // TODO: move to AAC
-    }
-
-    private void StartAnalysis(string filePath)
-    {
-        StartAnalysisAsync(filePath).Forget();
-    }
-
-    private async UniTaskVoid StartAnalysisAsync(string filePath)
-    {
-        analysisCancellation?.Cancel();
-
-        Debug.Log("Starting analysis...");
-
-        var analysisResult = await analysisApi.AnalyzeAudioAsync(filePath);
-        analysisResult.mainFilePath = filePath;
-
-        Debug.Log(
-            $"Analysis result: Tempo: {analysisResult.tempo}, Number of segments: {analysisResult.segments.Count}"
-        );
-
-        CurrentAnalysisResult.Value = analysisResult;
+        analysisController.SetQueue(paths);
     }
 
     private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)
     {
+        Debug.Log("Loading audio for: " + analysisResult.mainFilePath);
         StopAudio();
 
         foreach (var stem in new[] { StemNames.VOCALS, StemNames.DRUMS, StemNames.BASS, StemNames.OTHER })
@@ -177,18 +183,8 @@ public class AudioController : MonoBehaviour
             activeSnapshot.TransitionTo(0.0f);
             Debug.LogError($"Error getting main clip: {ex.Message}");
         }
-    }
 
-    private void SanitizeAnalysisResult(AnalysisResult analysisResult1)
-    {
-        // Replace inst with solo if solo is not present
-        if (analysisResult1.segments.All(segment => segment.label != SegmentLabels.SOLO))
-        {
-            foreach (var segment in analysisResult1.segments.Where(segment => segment.label == SegmentLabels.INST))
-            {
-                segment.label = SegmentLabels.SOLO;
-            }
-        }
+        PlayAudio();
     }
 
     private float[,] ConvertToMultidimensionalArray(List<List<float>> nestedList)
