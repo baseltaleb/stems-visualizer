@@ -54,6 +54,7 @@ public class AudioController : MonoBehaviour
             {
                 await HandleAudio(analysisResult, ct);
                 SongEvents.TriggerCurrentSongChange(analysisResult);
+                PlayAudio();
             });
 
         playbackController
@@ -183,8 +184,6 @@ public class AudioController : MonoBehaviour
             activeSnapshot.TransitionTo(0.0f);
             Debug.LogError($"Error getting main clip: {ex.Message}");
         }
-
-        PlayAudio();
     }
 
     private float[,] ConvertToMultidimensionalArray(List<List<float>> nestedList)

@@ -36,13 +36,12 @@ public class AudioPlaybackController
             .EveryUpdate()
             .Subscribe(_ =>
             {
-                if (IsPlaying.CurrentValue && GetCurrentTime() >= (sampleSource?.clip?.length ?? 0))
+                if (IsPlaying.CurrentValue && GetCurrentTime() >= (sampleSource?.clip?.length ?? 0) - 1)
                 {
                     Debug.Log("Song ended");
-                    var playing = IsPlaying.CurrentValue;
                     IsPlaying.Value = false;
                     SongEnded.Value++;
-                    if (playing) SongEnded.ForceNotify();
+                    SongEnded.ForceNotify();
                 }
             });
     }
@@ -101,9 +100,9 @@ public class AudioPlaybackController
             targetTime = 0;
         }
 
-        if (targetTime > source.clip.length)
+        if (targetTime > source.clip.length - seconds)
         {
-            targetTime = source.clip.length;
+            targetTime = source.clip.length - seconds;
         }
 
         foreach (var audioSource in audioSources)
