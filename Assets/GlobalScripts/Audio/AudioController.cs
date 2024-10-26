@@ -18,6 +18,8 @@ public class AudioController : MonoBehaviour
     public AudioSource bass;
     public AudioSource other;
 
+    public bool loopPlaylist = true;
+    
     private readonly AudioAnalysisApi analysisApi = new();
 
     private AudioMixerSnapshot activeSnapshot;
@@ -62,12 +64,12 @@ public class AudioController : MonoBehaviour
             .DistinctUntilChanged()
             .Subscribe(_ =>
             {
-                if (playlistController.HasNextFile())
+                if (loopPlaylist || playlistController.HasNextFile())
                 {
                     playlistController.MoveToNextFile();
                 }
             });
-    
+
         playbackController.SetAudioSources(new[] { vocals, drums, bass, other, main });
 
         activeSnapshot = mainEnabledSnapshot;
