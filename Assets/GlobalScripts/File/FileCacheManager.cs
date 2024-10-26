@@ -1,9 +1,13 @@
 using System.IO;
-using JetBrains.Annotations;
 using UnityEngine;
 
 public static class FileCacheManager
 {
+    public static void CacheFile(string path, string content)
+    {
+        File.WriteAllText(path, content);
+    }
+
     public static string GetFileCachePath(string sessionId, string fileName)
     {
         var path = Path.Combine(GetCachePath(), sessionId);

@@ -9,10 +9,11 @@ public class AudioPlaybackController
 {
     public readonly SynchronizedReactiveProperty<bool> IsPlaying = new(false);
     public readonly ReactiveProperty<int> SongEnded = new();
+    public string CurrentSongFile;
 
     private AudioSource[] audioSources;
     private AudioSource sampleSource;
-
+    
     public void SetAudioSources(AudioSource[] sources)
     {
         audioSources = sources;
@@ -46,13 +47,16 @@ public class AudioPlaybackController
             });
     }
 
-    public void SetClip(AudioClip clip, string tag)
+    public void SetClip(AudioClip clip, string tag, string fileName)
     {
         try
         {
             var source = audioSources.First(source => source.CompareTag(tag));
+            if (source.clip != null)
+                AudioClip.Destroy(source.clip);
             source.clip = clip;
             sampleSource = source;
+            CurrentSongFile = fileName;
         }
         catch (InvalidOperationException e)
         {

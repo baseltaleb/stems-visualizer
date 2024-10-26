@@ -1,18 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 public class CurrentSegmentChecker : MonoBehaviour
 {
     public AudioSource audioSource;
+    public bool loggingEnabled;
 
     private AnalysisResult currentResult;
     private Segment lastSegment;
     private float timer = 0f;
     private float timerCheckInterval = 0.5f;
+
     public void SetCurrentResult(AnalysisResult result)
     {
         currentResult = result;
@@ -26,7 +23,8 @@ public class CurrentSegmentChecker : MonoBehaviour
 
         if (segementAtSeconds != null && segementAtSeconds.label != lastSegment?.label)
         {
-            Debug.Log("Segment changed from " + lastSegment?.label + " to " + segementAtSeconds?.label);
+            if (loggingEnabled)
+                Debug.Log("Segment changed from " + lastSegment?.label + " to " + segementAtSeconds?.label);
             lastSegment = segementAtSeconds;
             SongEvents.TriggerSegementEnter(segementAtSeconds.label);
         }

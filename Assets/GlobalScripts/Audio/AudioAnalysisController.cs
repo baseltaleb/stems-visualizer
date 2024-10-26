@@ -32,7 +32,6 @@ class AudioAnalysisController
                     resultList.Add(result);
                     AnalyzedFiles.Value = resultList;
                     AnalyzedFiles.ForceNotify();
-                    Debug.Log($"****** notifying {file}");
                 }
             });
     }
@@ -44,8 +43,8 @@ class AudioAnalysisController
 
     private async UniTask<AnalysisResult> StartAnalysisAsync(string filePath, CancellationToken ct)
     {
-        Debug.Log("Starting analysis...");
-
+        Debug.Log("Starting analysis for file " + filePath.GetFileName());
+    
         var progress = new AnalysisProgress(0f, filePath);
         CurrentAnalysisProgress.Value = progress;
 
@@ -55,7 +54,7 @@ class AudioAnalysisController
         CurrentAnalysisProgress.Value = progress;
 
         Debug.Log(
-            $"Analysis result: Tempo: {analysisResult.tempo}, Number of segments: {analysisResult.segments.Count}"
+            $"Analysis result: File: {filePath.GetFileName()} Tempo: {analysisResult.tempo}, Number of segments: {analysisResult.segments.Count}"
         );
         SanitizeAnalysisResult(analysisResult);
         return analysisResult;

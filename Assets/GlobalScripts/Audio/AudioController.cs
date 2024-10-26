@@ -19,7 +19,7 @@ public class AudioController : MonoBehaviour
     public AudioSource other;
 
     public bool loopPlaylist = true;
-    
+
     private readonly AudioAnalysisApi analysisApi = new();
 
     private AudioMixerSnapshot activeSnapshot;
@@ -54,9 +54,12 @@ public class AudioController : MonoBehaviour
             .WhereNotNull()
             .SubscribeAwait(async (analysisResult, ct) =>
             {
-                await HandleAudio(analysisResult, ct);
-                SongEvents.TriggerCurrentSongChange(analysisResult);
-                PlayAudio();
+                if (playlistController.CurrentFile.CurrentValue != playbackController.CurrentSongFile)
+                {
+                    await HandleAudio(analysisResult, ct);
+                    SongEvents.TriggerCurrentSongChange(analysisResult);
+                    PlayAudio();
+                }
             });
 
         playbackController
@@ -148,14 +151,13 @@ public class AudioController : MonoBehaviour
             return;
         }
 
-        Debug.Log("Picked file: " + paths[0]);
         playlistController.SetFiles(paths);
         analysisController.SetQueue(paths);
     }
 
     private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)
     {
-        Debug.Log("Loading audio for: " + analysisResult.mainFilePath);
+        Debug.Log("Loading audio for: " + analysisResult.mainFilePath.GetFileName());
         StopAudio();
 
         foreach (var stem in new[] { StemNames.VOCALS, StemNames.DRUMS, StemNames.BASS, StemNames.OTHER })
@@ -165,7 +167,7 @@ public class AudioController : MonoBehaviour
 
             if (audioClip != null)
             {
-                playbackController.SetClip(audioClip, StemNames.GetTag(stem));
+                playbackController.SetClip(audioClip, StemNames.GetTag(stem), analysisResult.mainFilePath);
             }
             else
             {
@@ -176,7 +178,7 @@ public class AudioController : MonoBehaviour
         try
         {
             var mainClip = await analysisApi.GetAudioClip(analysisResult.mainFilePath, ct);
-            playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN));
+            playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN), analysisResult.mainFilePath);
             isMainTrackAvailable = true;
         }
         catch (Exception ex)
