@@ -8,7 +8,7 @@ using UnityEngine;
 public class AudioPlaybackController
 {
     public readonly SynchronizedReactiveProperty<bool> IsPlaying = new(false);
-    public readonly ReactiveProperty<int> SongEnded = new();
+    public static readonly ReactiveProperty<int> SongEnded = new();
     public string CurrentSongFile;
 
     private AudioSource[] audioSources;
@@ -122,6 +122,7 @@ public class AudioPlaybackController
 
     private async UniTask PlayAudioAsync(CancellationToken ct)
     {
+        
         foreach (var audioSource in audioSources)
         {
             while (audioSource.clip.loadState != AudioDataLoadState.Loaded)
@@ -132,6 +133,7 @@ public class AudioPlaybackController
 
         foreach (var audioSource in audioSources)
         {
+            Debug.Log("Playing audio" + audioSource.clip.name);
             audioSource.Play();
         }
     }

@@ -62,7 +62,7 @@ public class AudioController : MonoBehaviour
                 }
             });
 
-        playbackController
+        AudioPlaybackController
             .SongEnded
             .DistinctUntilChanged()
             .Subscribe(_ =>
