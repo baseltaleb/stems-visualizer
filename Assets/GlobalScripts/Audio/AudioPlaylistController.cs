@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class AudioPlaylistController
 {
-    public readonly ReactiveProperty<List<string>> CurrentPlaylist = new(new List<string>());
-    public readonly ReactiveProperty<string> CurrentFile = new();
+    public static readonly ReactiveProperty<List<string>> CurrentPlaylist = new(new List<string>());
+    public static readonly ReactiveProperty<string> CurrentFile = new();
 
     public AudioPlaylistController()
     {

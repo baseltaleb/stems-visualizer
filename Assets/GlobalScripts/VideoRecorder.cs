@@ -51,11 +51,6 @@ public class VideoRecorder : MonoBehaviour
             OutputHeight = 2160
         };
 
-        var mediaOutputFolder = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "Recordings"));
-        // Set output file
-        recordSettings.OutputFile =
-            Path.Combine(mediaOutputFolder.FullName, $"video_{System.DateTime.Now:yyyy-MM-dd_HH-mm-ss}");
-
         controllerSettings.AddRecorderSettings(recordSettings);
         controllerSettings.SetRecordModeToManual();
         controllerSettings.FrameRate = 60;
@@ -75,9 +70,16 @@ public class VideoRecorder : MonoBehaviour
 
     public void StartRecording()
     {
+        var file = AudioPlaylistController.CurrentFile.CurrentValue;
+        var mediaOutputFolder = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "Recordings"));
+        var fileName = Path.GetFileNameWithoutExtension(file);
+        var fullPath = Path.Combine(mediaOutputFolder.FullName, fileName);
+
+        recordSettings.OutputFile = fullPath;
+
         recorderController.PrepareRecording();
         recorderController.StartRecording();
-        Debug.Log("Started Recording");
+        Debug.Log($"Started Recording {fileName}");
     }
 
     public void StopRecording()

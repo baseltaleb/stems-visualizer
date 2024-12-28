@@ -42,7 +42,7 @@ public class AudioController : MonoBehaviour
 
     void Start()
     {
-        playlistController
+        AudioPlaylistController
             .CurrentFile
             .DistinctUntilChanged()
             .CombineLatest(analysisController.AnalyzedFiles, (currentFile, analyzedFiles) =>
@@ -54,7 +54,7 @@ public class AudioController : MonoBehaviour
             .WhereNotNull()
             .SubscribeAwait(async (analysisResult, ct) =>
             {
-                if (playlistController.CurrentFile.CurrentValue != playbackController.CurrentSongFile)
+                if (AudioPlaylistController.CurrentFile.CurrentValue != playbackController.CurrentSongFile)
                 {
                     await HandleAudio(analysisResult, ct);
                     SongEvents.TriggerCurrentSongChange(analysisResult);
