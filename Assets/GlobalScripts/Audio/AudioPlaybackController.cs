@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class AudioPlaybackController
 {
-    public readonly SynchronizedReactiveProperty<bool> IsPlaying = new(false);
+    public static readonly SynchronizedReactiveProperty<bool> IsPlaying = new(false);
     public static readonly ReactiveProperty<int> SongEnded = new();
     public string CurrentSongFile;
 

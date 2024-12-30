@@ -11,18 +11,40 @@ using UnityEditor.Recorder.Input;
 
 public class VideoRecorder : MonoBehaviour
 {
+    public string outputPath = null;
+    public bool autoRecord = false;
+    public int stopRecordingDelay = 3;
+    
     private RecorderController recorderController;
     private MovieRecorderSettings recordSettings;
 
     public void Start()
     {
         AudioPlaybackController
-            .SongEnded
+            .IsPlaying
             .DistinctUntilChanged()
-            .SubscribeAwait(async (_, ct) =>
+            .SubscribeAwait(async (isPlaying, ct) =>
             {
-                await StopRecordingWithDelay(ct);
+                if (!autoRecord) return;
+                
+                print($"IsPlaying: {isPlaying}, autoRecord: {autoRecord}");
+                if (isPlaying)
+                {
+                    StartRecording();
+                }
+                else
+                {
+                    await StopRecordingWithDelay(ct);
+                }
             });
+            
+        // AudioPlaybackController
+        //     .SongEnded
+        //     .DistinctUntilChanged()
+        //     .SubscribeAwait(async (_, ct) =>
+        //     {
+        //         await StopRecordingWithDelay(ct);
+        //     });
 
         var controllerSettings = ScriptableObject.CreateInstance<RecorderControllerSettings>();
         recorderController = new RecorderController(controllerSettings);
@@ -71,7 +93,17 @@ public class VideoRecorder : MonoBehaviour
     public void StartRecording()
     {
         var file = AudioPlaylistController.CurrentFile.CurrentValue;
-        var mediaOutputFolder = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "Recordings"));
+        Debug.Log($"Starting Recording {file}");
+        DirectoryInfo mediaOutputFolder;
+        if (outputPath == null)
+        {
+            mediaOutputFolder = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "Recordings"));
+        }
+        else
+        {
+            mediaOutputFolder = new DirectoryInfo(outputPath);
+        }
+
         var fileName = Path.GetFileNameWithoutExtension(file);
         var fullPath = Path.Combine(mediaOutputFolder.FullName, fileName);
 
@@ -84,6 +116,7 @@ public class VideoRecorder : MonoBehaviour
 
     public void StopRecording()
     {
+        Debug.Log("Stopping Recording");
         if (recorderController != null && recorderController.IsRecording())
         {
             recorderController.StopRecording();
@@ -93,7 +126,7 @@ public class VideoRecorder : MonoBehaviour
 
     async UniTask StopRecordingWithDelay(CancellationToken ct)
     {
-        await UniTask.Delay(3000, cancellationToken: ct);
+        await UniTask.Delay(TimeSpan.FromSeconds(stopRecordingDelay), cancellationToken: ct);
         StopRecording();
     }
 }
