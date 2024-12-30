@@ -19,7 +19,8 @@ public class AudioController : MonoBehaviour
     public AudioSource other;
 
     public bool loopPlaylist = true;
-
+    public int nextTrackDelay = 5;
+    
     private readonly AudioAnalysisApi analysisApi = new();
 
     private AudioMixerSnapshot activeSnapshot;
@@ -49,6 +50,7 @@ public class AudioController : MonoBehaviour
             {
                 if (currentFile == null) return null;
                 var matchingResult = analyzedFiles.FirstOrDefault(result => result.mainFilePath == currentFile);
+                Debug.Log($"[AC] Combined observer | currentFile: {currentFile}, analyzedFiles count: {analyzedFiles.Count}, matchingResult: {matchingResult?.mainFilePath}");
                 return matchingResult;
             })
             .WhereNotNull()
@@ -65,10 +67,11 @@ public class AudioController : MonoBehaviour
         AudioPlaybackController
             .SongEnded
             .DistinctUntilChanged()
-            .Subscribe(_ =>
+            .SubscribeAwait(async (_, ct) =>
             {
                 if (loopPlaylist || playlistController.HasNextFile())
                 {
+                    await UniTask.Delay(TimeSpan.FromSeconds(nextTrackDelay), cancellationToken: ct);
                     playlistController.MoveToNextFile();
                 }
             });
@@ -133,6 +136,7 @@ public class AudioController : MonoBehaviour
         }
     }
 
+    // UI next button
     public void NextSong()
     {
         playlistController.MoveToNextFile();
