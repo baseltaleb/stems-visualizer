@@ -14,7 +14,6 @@ class AudioAnalysisApi
 
     public async UniTask<AnalysisResult> AnalyzeAudioAsync(string filePath, CancellationToken ct)
     {
-        Debug.Log("Starting request for file " + filePath.GetFileName());
         WWWForm form = new WWWForm();
 
         // Add audio file

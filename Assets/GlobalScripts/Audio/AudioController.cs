@@ -20,7 +20,7 @@ public class AudioController : MonoBehaviour
 
     public bool loopPlaylist = true;
     public int nextTrackDelay = 5;
-    
+
     private readonly AudioAnalysisApi analysisApi = new();
 
     private AudioMixerSnapshot activeSnapshot;
@@ -43,25 +43,26 @@ public class AudioController : MonoBehaviour
 
     void Start()
     {
+        analysisController
+            .AnalyzedFiles
+            .SubscribeAwait(async (analysisResult, ct) =>
+            {
+                if (analysisResult == null || analysisResult.Count == 0) return;
+                // Check if no song has been loaded yet, if so, play the playlist song
+                if (!AudioPlaybackController.IsPlaying.Value && AudioPlaybackController.CurrentSongFile.Value == null)
+                {
+                    await PlayPlaylistSongSong(ct);
+                }
+            });
+
         AudioPlaylistController
             .CurrentFile
             .DistinctUntilChanged()
-            .CombineLatest(analysisController.AnalyzedFiles, (currentFile, analyzedFiles) =>
+            .SubscribeAwait(async (currentFile, ct) =>
             {
-                if (currentFile == null) return null;
-                var matchingResult = analyzedFiles.FirstOrDefault(result => result.mainFilePath == currentFile);
-                Debug.Log($"[AC] Combined observer | currentFile: {currentFile}, analyzedFiles count: {analyzedFiles.Count}, matchingResult: {matchingResult?.mainFilePath}");
-                return matchingResult;
-            })
-            .WhereNotNull()
-            .SubscribeAwait(async (analysisResult, ct) =>
-            {
-                if (AudioPlaylistController.CurrentFile.CurrentValue != playbackController.CurrentSongFile)
-                {
-                    await HandleAudio(analysisResult, ct);
-                    SongEvents.TriggerCurrentSongChange(analysisResult);
-                    PlayAudio();
-                }
+                if (currentFile == null) return;
+                if (currentFile == AudioPlaybackController.CurrentSongFile.Value) return;
+                await PlayPlaylistSongSong(ct);
             });
 
         AudioPlaybackController
@@ -69,6 +70,10 @@ public class AudioController : MonoBehaviour
             .DistinctUntilChanged()
             .SubscribeAwait(async (_, ct) =>
             {
+                var currentPlaylistFile = AudioPlaylistController.CurrentFile.Value;
+                var analyzedFiles = analysisController.AnalyzedFiles.Value;
+                if (currentPlaylistFile == null || analyzedFiles.Count == 0) return;
+                
                 if (loopPlaylist || playlistController.HasNextFile())
                 {
                     await UniTask.Delay(TimeSpan.FromSeconds(nextTrackDelay), cancellationToken: ct);
@@ -159,6 +164,20 @@ public class AudioController : MonoBehaviour
         analysisController.SetQueue(paths);
     }
 
+    
+    private async UniTask PlayPlaylistSongSong(CancellationToken ct)
+    {
+        var file = AudioPlaylistController.CurrentFile.Value;
+        var matchingResult = analysisController.AnalyzedFiles.Value.FirstOrDefault(result =>
+            result.mainFilePath == file
+        );
+        if (matchingResult == null) return;
+
+        await HandleAudio(matchingResult, ct);
+        SongEvents.TriggerCurrentSongChange(matchingResult);
+        PlayAudio();
+    }
+    
     private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)
     {
         Debug.Log("Loading audio for: " + analysisResult.mainFilePath.GetFileName());
@@ -171,7 +190,7 @@ public class AudioController : MonoBehaviour
 
             if (audioClip != null)
             {
-                playbackController.SetClip(audioClip, StemNames.GetTag(stem), analysisResult.mainFilePath);
+                playbackController.SetClip(audioClip, StemNames.GetTag(stem));
             }
             else
             {
@@ -179,10 +198,12 @@ public class AudioController : MonoBehaviour
             }
         }
 
+        playbackController.SetFile(analysisResult.mainFilePath);
+
         try
         {
             var mainClip = await analysisApi.GetAudioClip(analysisResult.mainFilePath, ct);
-            playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN), analysisResult.mainFilePath);
+            playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN));
             isMainTrackAvailable = true;
         }
         catch (Exception ex)

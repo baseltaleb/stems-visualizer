@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using IngameDebugConsole;
 using R3;
@@ -46,7 +45,7 @@ public class AudioPlaylistController
 
     public void MoveToNextFile()
     {
-        if (CurrentPlaylist.Value.Count < 1)
+        if (CurrentPlaylist.Value.Count < 1 || !HasNextFile())
         {
             Debug.LogWarning("Cannot move to next file");
             return;

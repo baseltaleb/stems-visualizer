@@ -8,8 +8,8 @@ using UnityEngine;
 public class AudioPlaybackController
 {
     public static readonly SynchronizedReactiveProperty<bool> IsPlaying = new(false);
+    public static readonly SynchronizedReactiveProperty<string> CurrentSongFile = new(null);
     public static readonly ReactiveProperty<int> SongEnded = new();
-    public string CurrentSongFile;
 
     private AudioSource[] audioSources;
     private AudioSource sampleSource;
@@ -47,7 +47,12 @@ public class AudioPlaybackController
             });
     }
 
-    public void SetClip(AudioClip clip, string tag, string fileName)
+    public void SetFile(string fileName)
+    {
+        CurrentSongFile.Value = fileName;
+    }
+
+    public void SetClip(AudioClip clip, string tag)
     {
         try
         {
@@ -56,7 +61,6 @@ public class AudioPlaybackController
                 AudioClip.Destroy(source.clip);
             source.clip = clip;
             sampleSource = source;
-            CurrentSongFile = fileName;
         }
         catch (InvalidOperationException e)
         {
