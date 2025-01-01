@@ -19,7 +19,7 @@ MonoBehaviour:
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 32
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -28,21 +28,23 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _DISABLE_DECALS
   - _DISABLE_SSR_TRANSPARENT
+  - _TESSELLATION_PHONG
   m_InvalidKeywords:
   - _NORMALMAP_TANGENT_SPACE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2225
+  m_CustomRenderQueue: 2000
   stringTagMap:
     MotionVector: User
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
   - TransparentBackface
-  - RayTracingPrepass
   - MOTIONVECTORS
+  - RayTracingPrepass
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -66,6 +68,8 @@ Material:
     - _AlphaDstBlend: 0
     - _AlphaSrcBlend: 1
     - _BlendMode: 0
+    - _CellDensityL1: 2.56
+    - _CellDensityL2: 13.26
     - _ConservativeDepthOffsetEnable: 0
     - _Contrast: 0.5
     - _CullMode: 2
@@ -82,6 +86,8 @@ Material:
     - _ExcludeFromTUAndAA: 0
     - _Intensity: 70.3
     - _IntensityFactor: 1
+    - _IntensityL1: 1.1
+    - _IntensityL2: 0.59
     - _MaterialID: 1
     - _MaterialTypeMask: 2
     - _Metallic: 0
@@ -97,6 +103,7 @@ Material:
     - _Scale: 0.7
     - _Smoothness: 0
     - _Speed: 0.01
+    - _SpeedL1: 0.5
     - _SrcBlend: 1
     - _StencilRef: 0
     - _StencilRefDepth: 8
@@ -108,15 +115,15 @@ Material:
     - _StencilWriteMaskDistortionVec: 4
     - _StencilWriteMaskGBuffer: 15
     - _StencilWriteMaskMV: 41
-    - _SupportDecals: 1
+    - _SupportDecals: 0
     - _SurfaceType: 0
-    - _TessellationBackFaceCullEpsilon: -0.25
+    - _TessellationBackFaceCullEpsilon: -0.145
     - _TessellationFactorMaxDistance: 100000
     - _TessellationFactorMinDistance: 100000
-    - _TessellationFactorTriangleSize: 10
-    - _TessellationMaxDisplacement: 93.4
-    - _TessellationMode: 0
-    - _TessellationShapeFactor: 0.388
+    - _TessellationFactorTriangleSize: 1
+    - _TessellationMaxDisplacement: 23990
+    - _TessellationMode: 1
+    - _TessellationShapeFactor: 0.322
     - _TransmissionEnable: 1
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
@@ -125,6 +132,7 @@ Material:
     - _TransparentSortPriority: 0
     - _TransparentWritingMotionVec: 0
     - _TransparentZWrite: 0
+    - _UVScale: 2.43
     - _UseShadowThreshold: 0
     - _Vallies_Emission_Multiplier: 1
     - _ZTestDepthEqualForOpaque: 3
@@ -132,13 +140,13 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
+    - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _PeakColor: {r: 1, g: 1, b: 1, a: 0}
     - _Peaks_Emissive_Color: {r: 0, g: 0, b: 0, a: 0}
     - _Period: {r: 4, g: 2, b: 2, a: 0}
     - _UVMultiplier: {r: 1, g: 1, b: 1, a: 0}
-    - _Vallies_Color: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 0}
+    - _Vallies_Color: {r: 0, g: 0, b: 0, a: 0}
     - _Vallies_Emissive_Color: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
