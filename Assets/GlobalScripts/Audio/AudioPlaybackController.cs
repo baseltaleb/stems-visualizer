@@ -27,8 +27,11 @@ public class AudioPlaybackController
                 {
                     foreach (var audioSource in audioSources)
                     {
-                        audioSource.Stop();
-                        audioSource.time = 0;
+                        if (audioSource.clip != null)
+                        {
+                            audioSource.Stop();
+                            audioSource.time = 0;
+                        }
                     }
                 }
             });
@@ -126,7 +129,7 @@ public class AudioPlaybackController
 
     private async UniTask PlayAudioAsync(CancellationToken ct)
     {
-        
+        Debug.Log($"Playing audio clips for: {sampleSource.clip.name}");
         foreach (var audioSource in audioSources)
         {
             while (audioSource.clip.loadState != AudioDataLoadState.Loaded)
@@ -137,7 +140,6 @@ public class AudioPlaybackController
 
         foreach (var audioSource in audioSources)
         {
-            Debug.Log("Playing audio" + audioSource.clip.name);
             audioSource.Play();
         }
     }

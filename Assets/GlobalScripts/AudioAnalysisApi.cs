@@ -71,6 +71,7 @@ class AudioAnalysisApi
         }
 
         AudioClip audioClip = DownloadHandlerAudioClip.GetContent(www);
+        audioClip.name = cacheFilePath.GetFileName();
         return audioClip;
     }
 

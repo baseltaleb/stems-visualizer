@@ -27,7 +27,6 @@ public class VideoRecorder : MonoBehaviour
             {
                 if (!autoRecord) return;
                 
-                print($"IsPlaying: {isPlaying}, autoRecord: {autoRecord}");
                 if (isPlaying)
                 {
                     StartRecording();
@@ -37,14 +36,6 @@ public class VideoRecorder : MonoBehaviour
                     await StopRecordingWithDelay(ct);
                 }
             });
-            
-        // AudioPlaybackController
-        //     .SongEnded
-        //     .DistinctUntilChanged()
-        //     .SubscribeAwait(async (_, ct) =>
-        //     {
-        //         await StopRecordingWithDelay(ct);
-        //     });
 
         var controllerSettings = ScriptableObject.CreateInstance<RecorderControllerSettings>();
         recorderController = new RecorderController(controllerSettings);
@@ -57,16 +48,10 @@ public class VideoRecorder : MonoBehaviour
         var encoderSettings = new ProResEncoderSettings()
         {
             Format = ProResEncoderSettings.OutputFormat.ProRes422Proxy,
-            // Codec = CoreEncoderSettings.OutputCodec.MP4,
-            // EncodingProfile = CoreEncoderSettings.H264EncodingProfile.High,
-            // EncodingQuality = CoreEncoderSettings.VideoEncodingQuality.High,
-            // TargetBitRate = 32
         };
         recordSettings.EncoderSettings = encoderSettings;
         recordSettings.CaptureAudio = true;
 
-        // recordSettings.OutputFormat = MovieRecorderSettings.VideoRecorderOutputFormat.MP4;
-        // recordSettings.VideoBitRateMode = VideoBitrateMode.High;
         recordSettings.ImageInputSettings = new GameViewInputSettings
         {
             OutputWidth = 3840,
@@ -93,7 +78,6 @@ public class VideoRecorder : MonoBehaviour
     public void StartRecording()
     {
         var file = AudioPlaylistController.CurrentFile.CurrentValue;
-        Debug.Log($"Starting Recording {file}");
         DirectoryInfo mediaOutputFolder;
         if (outputPath == null)
         {
@@ -110,13 +94,19 @@ public class VideoRecorder : MonoBehaviour
         recordSettings.OutputFile = fullPath;
 
         recorderController.PrepareRecording();
-        recorderController.StartRecording();
-        Debug.Log($"Started Recording {fileName}");
+        
+        if (recorderController.StartRecording())
+        {
+            Debug.Log($"Started Recording {fileName}");
+        }
+        else
+        {
+            Debug.Log("Failed to start recording");
+        }
     }
 
     public void StopRecording()
     {
-        Debug.Log("Stopping Recording");
         if (recorderController != null && recorderController.IsRecording())
         {
             recorderController.StopRecording();
