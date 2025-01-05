@@ -11,10 +11,12 @@ using UnityEditor.Recorder.Input;
 
 public class VideoRecorder : MonoBehaviour
 {
+    public bool landscape = false;
     public string outputPath = null;
-    public bool autoRecord = false;
+    public bool autoStart = false;
+    public bool autoStop = true;
     public int stopRecordingDelay = 3;
-    
+
     private RecorderController recorderController;
     private MovieRecorderSettings recordSettings;
 
@@ -25,13 +27,12 @@ public class VideoRecorder : MonoBehaviour
             .DistinctUntilChanged()
             .SubscribeAwait(async (isPlaying, ct) =>
             {
-                if (!autoRecord) return;
-                
-                if (isPlaying)
+                Debug.Log($"IsPlaying: {isPlaying}");
+                if (isPlaying && autoStart)
                 {
                     StartRecording();
                 }
-                else
+                else if (!isPlaying && autoStop)
                 {
                     await StopRecordingWithDelay(ct);
                 }
@@ -54,8 +55,8 @@ public class VideoRecorder : MonoBehaviour
 
         recordSettings.ImageInputSettings = new GameViewInputSettings
         {
-            OutputWidth = 3840,
-            OutputHeight = 2160
+            OutputWidth = landscape ? 2160 : 3840,
+            OutputHeight = landscape ? 3840 : 2160
         };
 
         controllerSettings.AddRecorderSettings(recordSettings);
@@ -65,6 +66,7 @@ public class VideoRecorder : MonoBehaviour
 
     public void ToggleRecording()
     {
+        Debug.Log($"Toggle Recording");
         if (recorderController.IsRecording())
         {
             StopRecording();
@@ -94,7 +96,7 @@ public class VideoRecorder : MonoBehaviour
         recordSettings.OutputFile = fullPath;
 
         recorderController.PrepareRecording();
-        
+
         if (recorderController.StartRecording())
         {
             Debug.Log($"Started Recording {fileName}");
