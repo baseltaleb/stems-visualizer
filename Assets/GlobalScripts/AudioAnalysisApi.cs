@@ -62,6 +62,7 @@ class AudioAnalysisApi
             cacheFilePath = cacheFilePath.Replace(@"\", @"/");
             cacheFilePath = @"file:///" + cacheFilePath;
         }
+
         UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(cacheFilePath, AudioType.MPEG);
         await www.SendWebRequest().WithCancellation(ct);
         if (www.result != UnityWebRequest.Result.Success)
@@ -95,5 +96,24 @@ class AudioAnalysisApi
 
         Debug.Log("File successfully downloaded and saved to " + storagePath);
         return storagePath;
+    }
+
+    public async UniTask UpdateResult(AnalysisResult analysisResult)
+    {
+        var request = UnityWebRequest.Post(
+            uri: ServerUrl + "/update_segments/" + analysisResult.session_id,
+            postData: JsonConvert.SerializeObject(analysisResult),
+            contentType: "application/json"
+        );
+        await request.SendWebRequest();
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError(request.error);
+        }
+        else
+        {
+            Debug.Log("Update Successful");
+        }
+        Debug.Log(request.result.ToString());
     }
 }

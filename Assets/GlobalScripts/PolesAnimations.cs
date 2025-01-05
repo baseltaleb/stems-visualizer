@@ -11,7 +11,10 @@ public class PolesAnimations : MonoBehaviour
     }
 
     void OnSegmentEnter(string label) {
-        segmentAnimator.SetTrigger(label);
+        if (SegmentLabels.IsSegment(label))
+        {
+            segmentAnimator.SetTrigger(label);
+        }
     }
 
     void OnEnable() {

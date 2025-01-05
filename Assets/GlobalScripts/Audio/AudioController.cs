@@ -20,6 +20,8 @@ public class AudioController : MonoBehaviour
 
     public bool loopPlaylist = true;
     public int nextTrackDelay = 5;
+    
+    public static readonly ReactiveProperty<AnalysisResult> CurrentAnalysisResult = new();
 
     private readonly AudioAnalysisApi analysisApi = new();
 
@@ -45,9 +47,9 @@ public class AudioController : MonoBehaviour
     {
         analysisController
             .AnalyzedFiles
-            .SubscribeAwait(async (analysisResult, ct) =>
+            .SubscribeAwait(async (analysisResults, ct) =>
             {
-                if (analysisResult == null || analysisResult.Count == 0) return;
+                if (analysisResults == null || analysisResults.Count == 0) return;
                 // Check if no song has been loaded yet, if so, play the playlist song
                 if (!AudioPlaybackController.IsPlaying.Value && AudioPlaybackController.CurrentSongFile.Value == null)
                 {
@@ -176,6 +178,7 @@ public class AudioController : MonoBehaviour
         await HandleAudio(matchingResult, ct);
         SongEvents.TriggerCurrentSongChange(matchingResult);
         PlayAudio();
+        CurrentAnalysisResult.Value = matchingResult;
     }
     
     private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)

@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Linq;
 
 [System.Serializable]
 public class Metadata
@@ -51,6 +52,24 @@ public static class SegmentLabels {
     public const string CHORUS = "chorus";
     public const string START = "start";
     public const string END = "end";
+
+    public static List<string> allLabels = new List<string> {
+        INTRO,
+        OUTRO,
+        BREAK,
+        BRIDGE,
+        INST,
+        SOLO,
+        VERSE,
+        CHORUS,
+        START,
+        END
+    };
+    
+    public static bool IsSegment(string label)
+    {
+        return allLabels.Any(label.Equals);
+    }
 }
 
 public static class StemNames
