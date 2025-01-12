@@ -32,7 +32,7 @@ public class CurrentSegmentChecker : MonoBehaviour
 
     void Update()
     {
-        if (audioSource.clip == null)
+        if (!audioSource.clip)
         {
             return;
         }

@@ -17,6 +17,8 @@ public class VideoRecorder : MonoBehaviour
     public bool autoStop = true;
     public int stopRecordingDelay = 3;
 
+    public static readonly SynchronizedReactiveProperty<bool> IsRecording = new(false);
+    
     private RecorderController recorderController;
     private MovieRecorderSettings recordSettings;
 
@@ -96,6 +98,7 @@ public class VideoRecorder : MonoBehaviour
         if (recorderController.StartRecording())
         {
             Debug.Log($"Started Recording {fileName}");
+            IsRecording.Value = true;
         }
         else
         {
@@ -108,6 +111,7 @@ public class VideoRecorder : MonoBehaviour
         if (recorderController != null && recorderController.IsRecording())
         {
             recorderController.StopRecording();
+            IsRecording.Value = false;
             Debug.Log("Stopped Recording");
         }
     }
