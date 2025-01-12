@@ -28,11 +28,7 @@ public class VideoRecorder : MonoBehaviour
             .SubscribeAwait(async (isPlaying, ct) =>
             {
                 Debug.Log($"IsPlaying: {isPlaying}");
-                if (isPlaying && autoStart)
-                {
-                    StartRecording();
-                }
-                else if (!isPlaying && autoStop)
+                if (AudioPlaybackController.CurrentSongFile.Value != null && !isPlaying && autoStop)
                 {
                     await StopRecordingWithDelay(ct);
                 }
@@ -120,6 +116,24 @@ public class VideoRecorder : MonoBehaviour
     {
         await UniTask.Delay(TimeSpan.FromSeconds(stopRecordingDelay), cancellationToken: ct);
         StopRecording();
+    }
+
+    private void OnCurrentSongChanged(AnalysisResult result)
+    {
+        if (recorderController != null && !recorderController.IsRecording() && autoStart)
+        {
+            StartRecording();
+        }
+    }
+
+    void OnEnable()
+    {
+        SongEvents.OnCurrentSongChanged += OnCurrentSongChanged;
+    }
+
+    void OnDisable()
+    {
+        SongEvents.OnCurrentSongChanged -= OnCurrentSongChanged;
     }
 }
 
