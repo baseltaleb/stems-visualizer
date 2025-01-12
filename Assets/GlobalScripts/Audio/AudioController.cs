@@ -19,8 +19,9 @@ public class AudioController : MonoBehaviour
     public AudioSource other;
 
     public bool loopPlaylist = true;
+    public int startPlaybackDelay = 1; // Helps in compensating for recorder or other delays
     public int nextTrackDelay = 5;
-    
+
     public static readonly ReactiveProperty<AnalysisResult> CurrentAnalysisResult = new();
 
     private readonly AudioAnalysisApi analysisApi = new();
@@ -177,8 +178,9 @@ public class AudioController : MonoBehaviour
 
         await HandleAudio(matchingResult, ct);
         SongEvents.TriggerCurrentSongChange(matchingResult);
-        PlayAudio();
         CurrentAnalysisResult.Value = matchingResult;
+        await UniTask.Delay(TimeSpan.FromSeconds(startPlaybackDelay), cancellationToken: ct);
+        PlayAudio();
     }
     
     private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)
