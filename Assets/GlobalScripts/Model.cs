@@ -36,6 +36,12 @@ public class AnalysisResult
 {
     public string session_id;
     public List<Segment> segments;
+
+    public List<float> beats;
+
+    public List<float> downbeats;
+
+    public List<int> beatPositions;
     // public Spectrogram spectrogram;
     public float tempo;
     public string mainFilePath = null;

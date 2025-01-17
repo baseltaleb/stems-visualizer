@@ -54,7 +54,7 @@ class AudioAnalysisController
         CurrentAnalysisProgress.Value = progress;
 
         Debug.Log(
-            $"Analysis result: File: {filePath.GetFileName()} Tempo: {analysisResult.tempo}, Number of segments: {analysisResult.segments.Count}"
+            $"Analysis result: File: {filePath.GetFileName()} \nTempo: {analysisResult.tempo}, \nNumber of segments: {analysisResult.segments.Count} \nBeats: {analysisResult.beats.Count} \nDownbeats: {analysisResult.downbeats.Count} \nSegments: {analysisResult.downbeats.Count}"
         );
         SanitizeAnalysisResult(analysisResult);
         return analysisResult;
