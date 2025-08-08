@@ -6,6 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Poles-remote/Poles-remote.unity
-    guid: cc29d56e6c8b52f468b2b5e6b669cbc8
+    path: Assets/Scenes/PolesHDRP/PolesHDRP.unity
+    guid: 77fc24b87593fd243ac89638509e9233
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

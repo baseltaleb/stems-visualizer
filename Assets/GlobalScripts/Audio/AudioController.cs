@@ -1,0 +1,243 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using R3;
+using UnityEngine;
+using UnityEngine.Audio;
+
+public class AudioController : MonoBehaviour
+{
+    public AudioMixerSnapshot mainEnabledSnapshot;
+    public AudioMixerSnapshot mainDisabledSnapshot;
+
+    public AudioSource main;
+    public AudioSource vocals;
+    public AudioSource drums;
+    public AudioSource bass;
+    public AudioSource other;
+
+    public bool loopPlaylist = true;
+    public int startPlaybackDelay = 1; // Helps in compensating for recorder or other delays
+    public int nextTrackDelay = 5;
+
+    public static readonly ReactiveProperty<AnalysisResult> CurrentAnalysisResult = new();
+
+    private readonly AudioAnalysisApi analysisApi = new();
+
+    private AudioMixerSnapshot activeSnapshot;
+    private readonly AudioPlaybackController playbackController = new();
+    private readonly AudioPlaylistController playlistController = new();
+    private AudioAnalysisController analysisController;
+
+    private CancellationTokenSource analysisCancellation;
+    private bool isMainTrackAvailable = false;
+
+    public void Awake()
+    {
+        analysisController = new AudioAnalysisController(analysisApi);
+        main.tag = StemNames.GetTag(StemNames.MAIN);
+        vocals.tag = StemNames.GetTag(StemNames.VOCALS);
+        drums.tag = StemNames.GetTag(StemNames.DRUMS);
+        bass.tag = StemNames.GetTag(StemNames.BASS);
+        other.tag = StemNames.GetTag(StemNames.OTHER);
+    }
+
+    void Start()
+    {
+        analysisController
+            .AnalyzedFiles
+            .SubscribeAwait(async (analysisResults, ct) =>
+            {
+                if (analysisResults == null || analysisResults.Count == 0) return;
+                // Check if no song has been loaded yet, if so, play the playlist song
+                if (!AudioPlaybackController.IsPlaying.Value && AudioPlaybackController.CurrentSongFile.Value == null)
+                {
+                    await PlayPlaylistSongSong(ct);
+                }
+            });
+
+        AudioPlaylistController
+            .CurrentFile
+            .DistinctUntilChanged()
+            .SubscribeAwait(async (currentFile, ct) =>
+            {
+                if (currentFile == null) return;
+                if (currentFile == AudioPlaybackController.CurrentSongFile.Value) return;
+                await PlayPlaylistSongSong(ct);
+            });
+
+        AudioPlaybackController
+            .SongEnded
+            .DistinctUntilChanged()
+            .SubscribeAwait(async (_, ct) =>
+            {
+                var currentPlaylistFile = AudioPlaylistController.CurrentFile.Value;
+                var analyzedFiles = analysisController.AnalyzedFiles.Value;
+                if (currentPlaylistFile == null || analyzedFiles.Count == 0) return;
+                
+                if (loopPlaylist || playlistController.HasNextFile())
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(nextTrackDelay), cancellationToken: ct);
+                    playlistController.MoveToNextFile();
+                }
+            });
+
+        playbackController.SetAudioSources(new[] { vocals, drums, bass, other, main });
+
+        activeSnapshot = mainEnabledSnapshot;
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            playbackController.Skip(-10);
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            playbackController.Skip(10);
+        }
+    }
+
+    void OnEnable()
+    {
+        FilePicker.OnFilesPickedEvent += OnFilesPicked;
+    }
+
+    void OnDisable()
+    {
+        FilePicker.OnFilesPickedEvent -= OnFilesPicked;
+    }
+
+    public void PlayAudio()
+    {
+        playbackController.PlayAudio();
+    }
+
+    public void StopAudio()
+    {
+        playbackController.StopAudio();
+    }
+
+    public void Mute(string stemName)
+    {
+        playbackController.ToggleMute(StemNames.GetTag(stemName));
+
+        if (isMainTrackAvailable)
+        {
+            var sources = new[] { vocals, drums, bass, other };
+            if (activeSnapshot == mainEnabledSnapshot)
+            {
+                activeSnapshot = mainDisabledSnapshot;
+            }
+
+            // If none of the sources are muted, mute all sources and unmute main
+            if (sources.All(source => !source.mute))
+            {
+                activeSnapshot = mainEnabledSnapshot;
+            }
+
+            activeSnapshot.TransitionTo(0.0f);
+        }
+    }
+
+    // UI next button
+    public void NextSong()
+    {
+        playlistController.MoveToNextFile();
+    }
+
+    public void PreviousSong()
+    {
+        playlistController.MoveToPreviousFile();
+    }
+
+    private void OnFilesPicked(string[] paths)
+    {
+        if (paths.Length == 0)
+        {
+            Debug.Log("No files picked");
+            return;
+        }
+
+        playlistController.SetFiles(paths);
+        analysisController.SetQueue(paths);
+    }
+
+    
+    private async UniTask PlayPlaylistSongSong(CancellationToken ct)
+    {
+        var file = AudioPlaylistController.CurrentFile.Value;
+        var matchingResult = analysisController.AnalyzedFiles.Value.FirstOrDefault(result =>
+            result.mainFilePath == file
+        );
+        if (matchingResult == null) return;
+
+        await HandleAudio(matchingResult, ct);
+        SongEvents.TriggerCurrentSongChange(matchingResult);
+        CurrentAnalysisResult.Value = matchingResult;
+        await UniTask.Delay(TimeSpan.FromSeconds(startPlaybackDelay), cancellationToken: ct);
+        PlayAudio();
+    }
+    
+    private async UniTask HandleAudio(AnalysisResult analysisResult, CancellationToken ct)
+    {
+        Debug.Log("Loading audio for: " + analysisResult.mainFilePath.GetFileName());
+        StopAudio();
+
+        foreach (var stem in new[] { StemNames.VOCALS, StemNames.DRUMS, StemNames.BASS, StemNames.OTHER })
+        {
+            var filePath = await analysisApi.GetCachedFilePath(sessionId: analysisResult.session_id, stem, ct);
+            var audioClip = await analysisApi.GetAudioClip(filePath, ct);
+
+            if (audioClip != null)
+            {
+                playbackController.SetClip(audioClip, StemNames.GetTag(stem));
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find audio clip: {filePath}");
+            }
+        }
+
+        playbackController.SetFile(analysisResult.mainFilePath);
+
+        try
+        {
+            var mainClip = await analysisApi.GetAudioClip(analysisResult.mainFilePath, ct);
+            playbackController.SetClip(mainClip, StemNames.GetTag(StemNames.MAIN));
+            isMainTrackAvailable = true;
+        }
+        catch (Exception ex)
+        {
+            isMainTrackAvailable = false;
+            activeSnapshot = mainDisabledSnapshot;
+            activeSnapshot.TransitionTo(0.0f);
+            Debug.LogError($"Error getting main clip: {ex.Message}");
+        }
+    }
+
+    private float[,] ConvertToMultidimensionalArray(List<List<float>> nestedList)
+    {
+        if (nestedList == null || nestedList.Count == 0)
+            return new float[0, 0];
+
+        int rows = nestedList.Count;
+        int cols = nestedList[0].Count;
+
+        float[,] result = new float[rows, cols];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                result[i, j] = nestedList[i][j];
+            }
+        }
+
+        return result;
+    }
+}

@@ -1,150 +1,150 @@
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
+// using System.Collections.Generic;
+// using UnityEngine;
+// using UnityEngine.Rendering;
+// using UnityEngine.Rendering.Universal;
 
-[System.Serializable]
-public class VolumetricLightScatteringSettings
-{
-    [Header("Properties")]
-    [Range(0.1f, 1f)]
-    public float resolutionScale = 0.5f;
+// [System.Serializable]
+// public class VolumetricLightScatteringSettings
+// {
+//     [Header("Properties")]
+//     [Range(0.1f, 1f)]
+//     public float resolutionScale = 0.5f;
 
-    [Range(0.0f, 1.0f)]
-    public float intensity = 1.0f;
+//     [Range(0.0f, 1.0f)]
+//     public float intensity = 1.0f;
 
-    [Range(0.0f, 1.0f)]
-    public float blurWidth = 0.85f;
+//     [Range(0.0f, 1.0f)]
+//     public float blurWidth = 0.85f;
 
-    public Shader blurShader;
-    public Shader unlitShader;
+//     public Shader blurShader;
+//     public Shader unlitShader;
 
-    public Vector3 effectDirection;
-}
+//     public Vector3 effectDirection;
+// }
 
-public class VolumetricLightScattering : ScriptableRendererFeature
-{
-    class LightScatteringPass : ScriptableRenderPass
-    {
-        private RenderTargetIdentifier cameraColorTargetIdent;
-        private FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
-        private readonly List<ShaderTagId> shaderTagIdList = new List<ShaderTagId>();
-        private readonly RenderTargetHandle occluders = RenderTargetHandle.CameraTarget;
-        private readonly float resolutionScale;
-        private readonly float intensity;
-        private readonly float blurWidth;
-        private readonly Material occludersMaterial;
-        private readonly Material radialBlurMaterial;
-        private readonly Vector3 sunDirectionWorldSpace = new Vector3(0, 0, 0);
-        public LightScatteringPass(VolumetricLightScatteringSettings settings)
-        {
-            occluders.Init("_OccludersMap");
-            resolutionScale = settings.resolutionScale;
-            intensity = settings.intensity;
-            blurWidth = settings.blurWidth;
+// public class VolumetricLightScattering : ScriptableRendererFeature
+// {
+//     class LightScatteringPass : ScriptableRenderPass
+//     {
+//         private RenderTargetIdentifier cameraColorTargetIdent;
+//         private FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
+//         private readonly List<ShaderTagId> shaderTagIdList = new List<ShaderTagId>();
+//         private readonly RTHandle occluders = RenderTargetHandle.CameraTarget;
+//         private readonly float resolutionScale;
+//         private readonly float intensity;
+//         private readonly float blurWidth;
+//         private readonly Material occludersMaterial;
+//         private readonly Material radialBlurMaterial;
+//         private readonly Vector3 sunDirectionWorldSpace = new Vector3(0, 0, 0);
+//         public LightScatteringPass(VolumetricLightScatteringSettings settings)
+//         {
+//             occluders.Alloc("_OccludersMap", name: "_OccludersMap");
+//             resolutionScale = settings.resolutionScale;
+//             intensity = settings.intensity;
+//             blurWidth = settings.blurWidth;
 
-            occludersMaterial = new Material(settings.unlitShader);
-            radialBlurMaterial = new Material(settings.blurShader);
+//             occludersMaterial = new Material(settings.unlitShader);
+//             radialBlurMaterial = new Material(settings.blurShader);
 
-            shaderTagIdList.Add(new ShaderTagId("UniversalForward"));
-            shaderTagIdList.Add(new ShaderTagId("UniversalForwardOnly"));
-            shaderTagIdList.Add(new ShaderTagId("LightweightForward"));
-            shaderTagIdList.Add(new ShaderTagId("SRPDefaultUnlit"));
-            sunDirectionWorldSpace = settings.effectDirection;
-        }
+//             shaderTagIdList.Add(new ShaderTagId("UniversalForward"));
+//             shaderTagIdList.Add(new ShaderTagId("UniversalForwardOnly"));
+//             shaderTagIdList.Add(new ShaderTagId("LightweightForward"));
+//             shaderTagIdList.Add(new ShaderTagId("SRPDefaultUnlit"));
+//             sunDirectionWorldSpace = settings.effectDirection;
+//         }
 
-        public void SetCameraColorTarget(RenderTargetIdentifier cameraColorTargetIdent)
-        {
-            this.cameraColorTargetIdent = cameraColorTargetIdent;
-        }
+//         public void SetCameraColorTarget(RenderTargetIdentifier cameraColorTargetIdent)
+//         {
+//             this.cameraColorTargetIdent = cameraColorTargetIdent;
+//         }
 
-        // This method is called before executing the render pass.
-        // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
-        // When empty this render pass will render to the active camera render target.
-        // You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
-        // The render pipeline will ensure target setup and clearing happens in a performant manner.
-        public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
-        {
-            RenderTextureDescriptor cameraTextureDescriptor = renderingData.cameraData.cameraTargetDescriptor;
+//         // This method is called before executing the render pass.
+//         // It can be used to configure render targets and their clear state. Also to create temporary render target textures.
+//         // When empty this render pass will render to the active camera render target.
+//         // You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
+//         // The render pipeline will ensure target setup and clearing happens in a performant manner.
+//         public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
+//         {
+//             RenderTextureDescriptor cameraTextureDescriptor = renderingData.cameraData.cameraTargetDescriptor;
 
-            cameraTextureDescriptor.depthBufferBits = 0;
+//             cameraTextureDescriptor.depthBufferBits = 0;
 
-            cameraTextureDescriptor.width = Mathf.RoundToInt(cameraTextureDescriptor.width * resolutionScale);
-            cameraTextureDescriptor.height = Mathf.RoundToInt(cameraTextureDescriptor.height * resolutionScale);
+//             cameraTextureDescriptor.width = Mathf.RoundToInt(cameraTextureDescriptor.width * resolutionScale);
+//             cameraTextureDescriptor.height = Mathf.RoundToInt(cameraTextureDescriptor.height * resolutionScale);
 
-            cmd.GetTemporaryRT(occluders.id, cameraTextureDescriptor, FilterMode.Bilinear);
+//             cmd.GetTemporaryRT(Shader.PropertyToID(occluders.name), cameraTextureDescriptor, FilterMode.Bilinear);
 
-            ConfigureTarget(occluders.Identifier());
-        }
+//             ConfigureTarget(occluders);
+//         }
 
-        // Here you can implement the rendering logic.
-        // Use <c>ScriptableRenderContext</c> to issue drawing commands or execute command buffers
-        // https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.html
-        // You don't have to call ScriptableRenderContext.submit, the render pipeline will call it at specific points in the pipeline.
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-        {
-            if (!occludersMaterial || !radialBlurMaterial)
-            {
-                return;
-            }
+//         // Here you can implement the rendering logic.
+//         // Use <c>ScriptableRenderContext</c> to issue drawing commands or execute command buffers
+//         // https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.html
+//         // You don't have to call ScriptableRenderContext.submit, the render pipeline will call it at specific points in the pipeline.
+//         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+//         {
+//             if (!occludersMaterial || !radialBlurMaterial)
+//             {
+//                 return;
+//             }
 
-            CommandBuffer cmd = CommandBufferPool.Get();
+//             CommandBuffer cmd = CommandBufferPool.Get();
 
-            using (new ProfilingScope(cmd, new ProfilingSampler("VolumetricLightScattering")))
-            {
-                context.ExecuteCommandBuffer(cmd);
-                cmd.Clear();
+//             using (new ProfilingScope(cmd, new ProfilingSampler("VolumetricLightScattering")))
+//             {
+//                 context.ExecuteCommandBuffer(cmd);
+//                 cmd.Clear();
 
-                Camera camera = renderingData.cameraData.camera;
-                context.DrawSkybox(camera);
+//                 Camera camera = renderingData.cameraData.camera;
+//                 context.DrawSkybox(camera);
 
-                DrawingSettings drawSettings = CreateDrawingSettings(shaderTagIdList, ref renderingData, SortingCriteria.CommonOpaque);
-                drawSettings.overrideMaterial = occludersMaterial;
+//                 DrawingSettings drawSettings = CreateDrawingSettings(shaderTagIdList, ref renderingData, SortingCriteria.CommonOpaque);
+//                 drawSettings.overrideMaterial = occludersMaterial;
 
-                context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref filteringSettings);
+//                 context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref filteringSettings);
 
-                //Vector3 sunDirectionWorldSpace = RenderSettings.sun.transform.forward;
+//                 //Vector3 sunDirectionWorldSpace = RenderSettings.sun.transform.forward;
 
-                Vector3 cameraPositionWorldSpace = camera.transform.position;
-                Vector3 sunPositionWorldSpace = cameraPositionWorldSpace + sunDirectionWorldSpace;
-                Vector3 sunPositionViewportSpace = camera.WorldToViewportPoint(sunPositionWorldSpace);
+//                 Vector3 cameraPositionWorldSpace = camera.transform.position;
+//                 Vector3 sunPositionWorldSpace = cameraPositionWorldSpace + sunDirectionWorldSpace;
+//                 Vector3 sunPositionViewportSpace = camera.WorldToViewportPoint(sunPositionWorldSpace);
 
-                radialBlurMaterial.SetVector("_Center", new Vector4(sunPositionViewportSpace.x, sunPositionViewportSpace.y, 0, 0));
-                radialBlurMaterial.SetFloat("_Intensity", intensity);
-                radialBlurMaterial.SetFloat("BlurWidth", blurWidth);
+//                 radialBlurMaterial.SetVector("_Center", new Vector4(sunPositionViewportSpace.x, sunPositionViewportSpace.y, 0, 0));
+//                 radialBlurMaterial.SetFloat("_Intensity", intensity);
+//                 radialBlurMaterial.SetFloat("BlurWidth", blurWidth);
 
-                Blit(cmd, occluders.Identifier(), cameraColorTargetIdent, radialBlurMaterial);
-            }
+//                 Blit(cmd, occluders.Identifier(), cameraColorTargetIdent, radialBlurMaterial);
+//             }
 
-            context.ExecuteCommandBuffer(cmd);
-            CommandBufferPool.Release(cmd);
-        }
+//             context.ExecuteCommandBuffer(cmd);
+//             CommandBufferPool.Release(cmd);
+//         }
 
-        // Cleanup any allocated resources that were created during the execution of this render pass.
-        public override void OnCameraCleanup(CommandBuffer cmd)
-        {
-            cmd.ReleaseTemporaryRT(occluders.id);
-        }
-    }
+//         // Cleanup any allocated resources that were created during the execution of this render pass.
+//         public override void OnCameraCleanup(CommandBuffer cmd)
+//         {
+//             cmd.ReleaseTemporaryRT(Shader.PropertyToID(occluders.name));
+//         }
+//     }
 
-    public VolumetricLightScatteringSettings settings = new VolumetricLightScatteringSettings();
+//     public VolumetricLightScatteringSettings settings = new VolumetricLightScatteringSettings();
 
-    private LightScatteringPass m_ScriptablePass;
+//     private LightScatteringPass m_ScriptablePass;
 
-    /// <inheritdoc/>
-    public override void Create()
-    {
-        m_ScriptablePass = new LightScatteringPass(settings);
-        m_ScriptablePass.renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
-    }
+//     /// <inheritdoc/>
+//     public override void Create()
+//     {
+//         m_ScriptablePass = new LightScatteringPass(settings);
+//         m_ScriptablePass.renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
+//     }
 
-    // Here you can inject one or multiple render passes in the renderer.
-    // This method is called when setting up the renderer once per-camera.
-    public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
-    {
-        renderer.EnqueuePass(m_ScriptablePass);
-        m_ScriptablePass.SetCameraColorTarget(renderer.cameraColorTarget);
-    }
-}
+//     // Here you can inject one or multiple render passes in the renderer.
+//     // This method is called when setting up the renderer once per-camera.
+//     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
+//     {
+//         renderer.EnqueuePass(m_ScriptablePass);
+//         m_ScriptablePass.SetCameraColorTarget(renderer.cameraColorTarget);
+//     }
+// }
 
 

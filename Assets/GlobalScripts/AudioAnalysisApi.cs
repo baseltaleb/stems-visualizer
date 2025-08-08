@@ -1,0 +1,119 @@
+using System;
+using System.IO;
+using System.Threading;
+using UnityEngine;
+using UnityEngine.Networking;
+using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
+
+class AudioAnalysisApi
+{
+    private const string ServerUrl = "http://localhost:5000";
+    private const string AudioExtension = ".mp3";
+    private CancellationTokenSource fileDownloadCts;
+
+    public async UniTask<AnalysisResult> AnalyzeAudioAsync(string filePath, CancellationToken ct)
+    {
+        WWWForm form = new WWWForm();
+
+        // Add audio file
+        byte[] audioData = await File.ReadAllBytesAsync(filePath);
+        form.AddBinaryData("audio", audioData, Path.GetFileName(filePath), "audio/mp3");
+
+        UnityWebRequest www = UnityWebRequest.Post(ServerUrl + "/segment", form);
+        www.SetRequestHeader("Accept", "application/json");
+
+        await www.SendWebRequest().WithCancellation(ct);
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Audio analysis error: " + www.error);
+            return null;
+        }
+
+        string jsonResult = www.downloadHandler.text;
+        AnalysisResult result = JsonConvert.DeserializeObject<AnalysisResult>(jsonResult);
+
+        return result;
+    }
+
+    public async UniTask<string> GetCachedFilePath(string sessionId, string stemName, CancellationToken ct)
+    {
+        var fileName = stemName + AudioExtension;
+        var cacheFilePath = FileCacheManager.GetFileCachePath(sessionId, fileName);
+
+        if (!FileCacheManager.IsCached(cacheFilePath))
+        {
+            await DownloadStemFileAsync(
+                sessionId: sessionId,
+                fileName: fileName,
+                storagePath: cacheFilePath,
+                ct
+            );
+        }
+
+        return cacheFilePath;
+    }
+
+    public async UniTask<AudioClip> GetAudioClip(string cacheFilePath, CancellationToken ct)
+    {
+        if (cacheFilePath.StartsWith("\\"))
+        {
+            cacheFilePath = cacheFilePath.Replace(@"\", @"/");
+            cacheFilePath = @"file:///" + cacheFilePath;
+        }
+
+        UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(cacheFilePath, AudioType.MPEG);
+        await www.SendWebRequest().WithCancellation(ct);
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+            return null;
+        }
+
+        AudioClip audioClip = DownloadHandlerAudioClip.GetContent(www);
+        audioClip.name = cacheFilePath.GetFileName();
+        return audioClip;
+    }
+
+    private async UniTask<string> DownloadStemFileAsync(
+        string sessionId,
+        string fileName,
+        string storagePath,
+        CancellationToken ct
+    )
+    {
+        var url = ServerUrl + "/" + "file/" + sessionId + "/" + fileName;
+        var uwr = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET);
+        uwr.downloadHandler = new DownloadHandlerFile(storagePath);
+        await uwr.SendWebRequest().WithCancellation(ct);
+
+        if (uwr.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(uwr.error);
+            throw new InvalidOperationException("Download Failed");
+        }
+
+        Debug.Log("File successfully downloaded and saved to " + storagePath);
+        return storagePath;
+    }
+
+    public async UniTask UpdateResult(AnalysisResult analysisResult)
+    {
+        var request = UnityWebRequest.Post(
+            uri: ServerUrl + "/update_segments/" + analysisResult.session_id,
+            postData: JsonConvert.SerializeObject(analysisResult),
+            contentType: "application/json"
+        );
+        await request.SendWebRequest();
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError(request.error);
+        }
+        else
+        {
+            Debug.Log("Update Successful");
+        }
+        Debug.Log(request.result.ToString());
+    }
+}

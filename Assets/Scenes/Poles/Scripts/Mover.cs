@@ -16,7 +16,7 @@ public class Mover : MonoBehaviour
         if (animateUvOffset)
         {
             curOffset += new Vector2(moveUnitsPerSecond.x * Time.deltaTime, moveUnitsPerSecond.y * Time.deltaTime);
-            GetComponent<Renderer>().material.SetTextureOffset("_BaseMap", curOffset);
+            GetComponent<Renderer>().material.SetTextureOffset("_BaseColorMap", curOffset);
 
         }
     }

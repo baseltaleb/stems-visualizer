@@ -166,11 +166,13 @@ public class SimpleSpectrum : MonoBehaviour, IAudioSourceConsumer {
     /// The minimum (low value) color if useColorGradient is true, else the solid color to use.
     /// </summary>
     [Tooltip("The minimum (low value) color if useColorGradient is true, else the solid color to use.")]
+    [ColorUsage(true, true)]
     public Color colorMin = Color.black;
     /// <summary>
     /// The maximum (high value) color if useColorGradient is true.
     /// </summary>
     [Tooltip("The maximum (high value) color.")]
+    [ColorUsage(true, true)]
     public Color colorMax = Color.white;
     /// <summary>
     /// The curve that determines the interpolation between colorMin and colorMax.
@@ -227,7 +229,7 @@ public class SimpleSpectrum : MonoBehaviour, IAudioSourceConsumer {
     //float lograithmicAmplitudePower = 2, multiplyByFrequencyPower = 1.5f;
     [HideInInspector]
 	public Transform[] bars;
-    Material[] barMaterials; //optimisation
+    public Material[] barMaterials; //optimisation
     float[] oldYScales; //also optimisation
     float[] oldColorValues; //...optimisation
     int materialValId;
